@@ -1,0 +1,31 @@
+{
+    "name": "spira/zuora-laravel-sdk",
+    "description": "Lumen/Laravel service provider for interfacing with Zuora SOAP API",
+    "keywords": [
+        "laravel",
+        "lumen",
+        "zuora",
+        "sdk",
+        "SOAP"
+    ],
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "illuminate/support": "^5.2"
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^3.0",
+        "satooshi/php-coveralls": "dev-master",
+        "phpunit/phpunit": "~4.0",
+        "mockery/mockery": "^0.9.4",
+        "fzaninotto/faker": "^1.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Spira\\ZuoraSdk\\": ""
+        }
+    },
+    "config": {
+        "preferred-install": "dist"
+    }
+}

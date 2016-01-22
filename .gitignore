@@ -1,0 +1,15 @@
+# composer dependencies
+vendor
+
+# jetbrains folder
+.idea
+
+#Placeholder file for making sure a directory is tracked
+!.gitkeep
+
+
+# coverage
+reports/*
+
+# helper
+_ide_helper.php
