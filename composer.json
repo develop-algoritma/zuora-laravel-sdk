@@ -22,8 +22,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Spira\\ZuoraSdk\\": ""
+            "Spira\\ZuoraSdk\\": "src"
         }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/"
+        ]
     },
     "config": {
         "preferred-install": "dist"
