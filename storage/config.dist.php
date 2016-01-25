@@ -7,7 +7,7 @@
 
 return [
     'wsdl'     => __DIR__ . '/zuora.a.74.0.wsdl',
-    'username' => 'igor.osharin+sandbox@toptal.com',
-    'password' => 'ETrvG8ar',
+    'username' => '',
+    'password' => '',
     'endpoint' => 'https://apisandbox.zuora.com/apps/services/a/74.0',
 ];

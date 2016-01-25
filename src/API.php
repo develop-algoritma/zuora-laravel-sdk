@@ -2,10 +2,14 @@
 
 namespace Spira\ZuoraSdk;
 
+use Monolog\Logger;
 use Illuminate\Support\Arr;
+use Psr\Log\LoggerInterface;
+use Monolog\Handler\NullHandler;
 use Spira\ZuoraSdk\DataObjects\Error;
 use Spira\ZuoraSdk\DataObjects\Account;
 use Spira\ZuoraSdk\DataObjects\Product;
+use Spira\ZuoraSdk\Exception\ApiException;
 use Spira\ZuoraSdk\Exception\LogicException;
 
 class API
@@ -27,9 +31,13 @@ class API
     /** @var \SoapHeader */
     protected $session;
 
-    function __construct(array $config)
+    /** @var LoggerInterface */
+    protected $logger;
+
+    function __construct(array $config = null, LoggerInterface $logger = null)
     {
         $this->config = $config;
+        $this->logger = $logger ?: new Logger('zuora', [new NullHandler()]);
     }
 
     /**
@@ -37,11 +45,7 @@ class API
      */
     public function create($objects)
     {
-        $objects = $this->prepareSoapVars($objects);
-
-        $this->shouldBeLoggedIn();
-
-        return $this->call('create', ['zObjects' => $objects]);
+        return $this->call('create', ['zObjects' => $this->prepareSoapVars($objects)]);
     }
 
     /**
@@ -49,11 +53,7 @@ class API
      */
     public function update($objects)
     {
-        $objects = $this->prepareSoapVars($objects);
-
-        $this->shouldBeLoggedIn();
-
-        return $this->call('update', ['zObjects' => $objects]);
+        return $this->call('update', ['zObjects' => $this->prepareSoapVars($objects)]);
     }
 
     /**
@@ -62,8 +62,6 @@ class API
      */
     public function delete($type, $ids)
     {
-        $this->shouldBeLoggedIn();
-
         return $this->call('delete', ['delete' => ['type' => $type, 'ids' => $ids]]);
     }
 
@@ -72,8 +70,6 @@ class API
      */
     public function query($query, $limit = null)
     {
-        $this->shouldBeLoggedIn();
-
         $headers = $limit ? [$this->makeLimitHeader($limit)] : [];
         $result  = $this->call('query', ['query' => ['queryString' => $query]], $headers);
 
@@ -91,8 +87,6 @@ class API
         if (!$this->hasMore()) {
             throw new LogicException('No query locator stored from previous query');
         }
-
-        $this->shouldBeLoggedIn();
 
         $data    = ['queryMore' => ['queryLocator' => $this->queryLocator]];
         $headers = $limit ? [$this->makeLimitHeader($limit)] : [];
@@ -113,6 +107,39 @@ class API
     }
 
     /**
+     * @return \SoapClient
+     */
+    public function getClient()
+    {
+        if (is_null($this->client)) {
+            $this->client = new \SoapClient(
+                $this->config['wsdl'],
+                [
+                    'soap_version' => SOAP_1_1,
+                    'trace'        => true,
+                    'exceptions'   => true,
+                    'classmap'     => $this->getClassMap(),
+                    'cache_wsdl'   => WSDL_CACHE_NONE,
+                ]
+            );
+            $this->client->__setLocation($this->config['endpoint']);
+        }
+
+        return $this->client;
+    }
+
+    /**
+     * @param \SoapClient $client
+     * @return $this
+     */
+    public function setClient(\SoapClient $client)
+    {
+        $this->client = $client;
+
+        return $this;
+    }
+
+    /**
      * Header for limit a query
      *
      * @return \SoapHeader
@@ -128,13 +155,20 @@ class API
     protected function shouldBeLoggedIn()
     {
         if (empty($this->session)) {
-            $result = $this->getClient()->login(Arr::only($this->config, ['username', 'password']));
+            try {
+                $result = $this->getClient()->login(Arr::only($this->config, ['username', 'password']));
+            } catch (\Exception $e) {
+                $this->logger->error('Login error: ' . $e->getMessage(), Arr::except($this->config, 'password'));
+
+                throw $e;
+            }
 
             $this->session = new \SoapHeader(
                 'http://api.zuora.com/',
                 'SessionHeader',
                 ['session' => $result->result->Session]
             );
+            $this->logger->debug('Logged as ' . $this->config['username']);
         }
     }
 
@@ -174,41 +208,32 @@ class API
         );
     }
 
+
     /**
      * Call method on Zuora API
      *
      * @see \SoapClient::__soapCall
      */
-    protected function call($method, array $arguments, array $headers = [])
+    public function call($method, array $arguments, array $headers = [])
     {
+        $this->logger->notice(sprintf('call(%s, %s)', $method, json_encode($arguments)));
+        $this->shouldBeLoggedIn();
+
         $headersCombined = array_merge($this->headers, $headers);
         if ($this->session) {
             $headersCombined[] = $this->session;
         }
 
-        return $this->getClient()->__soapCall($method, $arguments, null, $headersCombined);
-    }
+        $result = $this->getClient()->__soapCall($method, $arguments, null, $headersCombined);
 
-    /**
-     * @return \SoapClient
-     */
-    public function getClient()
-    {
-        if (is_null($this->client)) {
-            $this->client = new \SoapClient(
-                $this->config['wsdl'],
-                [
-                    'soap_version' => SOAP_1_1,
-                    'trace'        => true,
-                    'exceptions'   => true,
-                    'classmap'     => $this->getClassMap(),
-                    'cache_wsdl'   => WSDL_CACHE_NONE,
-                ]
-            );
-            $this->client->__setLocation($this->config['endpoint']);
+        if (empty($result->result->Success)) {
+            $err = ApiException::createFromApiObject(!empty($result->result->Errors) ? $result->result->Errors : null);
+            $this->logger->error(sprintf('[%s] %s', $err->getCodeName(), $err->getMessage()));
+
+            throw $err;
         }
 
-        return $this->client;
+        return $result;
     }
 
     /**
