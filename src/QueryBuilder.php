@@ -5,24 +5,24 @@ namespace Spira\ZuoraSdk;
 use Spira\ZuoraSdk\Exception\LogicException;
 
 /**
- * Query builder for ZOQL
+ * Query builder for ZOQL.
  *
  * @see https://knowledgecenter.zuora.com/BC_Developers/SOAP_API/M_Zuora_Object_Query_Language
  */
 class QueryBuilder
 {
     protected $table;
-    protected $where   = [];
+    protected $where = [];
     protected $columns = [];
     protected $allowed_operators = ['<', '>', '=', '!=', '<=', '>=', '<>'];
 
-    function __construct($table, array $columns)
+    public function __construct($table, array $columns)
     {
         if (empty($columns)) {
             throw new LogicException('There should be at least one column in QueryBuilder');
         }
 
-        $this->table   = $table;
+        $this->table = $table;
         $this->columns = $columns;
     }
 
@@ -38,10 +38,10 @@ class QueryBuilder
 
     public function toZoql()
     {
-        $query = sprintf('SELECT %s FROM %s', join(', ', $this->columns), $this->table);
+        $query = sprintf('SELECT %s FROM %s', implode(', ', $this->columns), $this->table);
 
         if ($where = $this->buildWhere()) {
-            $query .= ' WHERE ' . $where;
+            $query .= ' WHERE '.$where;
         }
 
         return $query;
@@ -55,7 +55,7 @@ class QueryBuilder
 
             $where .= sprintf(
                 '%s%s %s %s',
-                (!empty($where) ? $prefix : ''),
+                (! empty($where) ? $prefix : ''),
                 $condition['column'],
                 $condition['operator'],
                 $this->convertValue($condition['value'])
@@ -84,7 +84,7 @@ class QueryBuilder
 
     protected function addWhere($column, $operator, $value, $or)
     {
-        if (!in_array($operator, $this->allowed_operators)) {
+        if (! in_array($operator, $this->allowed_operators)) {
             throw new LogicException(sprintf('Operator "%s" is not allowed', $operator));
         }
 

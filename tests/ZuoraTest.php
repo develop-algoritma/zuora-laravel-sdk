@@ -40,12 +40,12 @@ class ZuoraTest extends TestCase
     }
 
     /**
-     * You should have at least one product in your demo account for passing this test
+     * You should have at least one product in your demo account for passing this test.
      * @group integration
      */
     public function testGetAllReturnsArrayOfProductsForOneLimited()
     {
-        $api   = $this->makeApi(true);
+        $api = $this->makeApi(true);
         $zuora = new Zuora($api);
 
         $products = $zuora->getAll('Product', ['Id', 'Name'], 1);
@@ -56,12 +56,12 @@ class ZuoraTest extends TestCase
     }
 
     /**
-     * You should have at least one product in your demo account for passing this test
+     * You should have at least one product in your demo account for passing this test.
      * @group integration
      */
     public function testGetAllReturnsArrayOfProducts()
     {
-        $api   = $this->makeApi(true);
+        $api = $this->makeApi(true);
         $zuora = new Zuora($api);
 
         $products = $zuora->getAll('Product', ['Id', 'Name']);
@@ -71,12 +71,12 @@ class ZuoraTest extends TestCase
     }
 
     /**
-     * You should have at least one product in your demo account for passing this test
+     * You should have at least one product in your demo account for passing this test.
      * @group integration
      */
     public function testGetOneReturnsProduct()
     {
-        $api   = $this->makeApi(true);
+        $api = $this->makeApi(true);
         $zuora = new Zuora($api);
 
         $product = $zuora->getOne('Product', ['Id', 'Name']);

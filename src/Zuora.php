@@ -93,6 +93,6 @@ class Zuora
     {
         $result = $this->api->query($query->toZoql(), 1);
 
-        return !empty($result->result->records) ? $result->result->records : false;
+        return ! empty($result->result->records) ? $result->result->records : false;
     }
 }

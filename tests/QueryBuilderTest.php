@@ -18,7 +18,7 @@ class QueryBuilderTest extends TestCase
         $builder = new QueryBuilder('Products', ['Id', 'Name']);
         $builder->where('Id', '=', $value);
 
-        $this->assertEquals('SELECT Id, Name FROM Products WHERE Id = ' . $expected, $builder->toZoql());
+        $this->assertEquals('SELECT Id, Name FROM Products WHERE Id = '.$expected, $builder->toZoql());
     }
 
     public function dataWhereConditions()
