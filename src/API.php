@@ -34,7 +34,7 @@ class API
     /** @var LoggerInterface */
     protected $logger;
 
-    function __construct(array $config = null, LoggerInterface $logger = null)
+    public function __construct(array $config = null, LoggerInterface $logger = null)
     {
         $this->config = $config;
         $this->logger = $logger ?: new Logger('zuora', [new NullHandler()]);
@@ -72,7 +72,7 @@ class API
     }
 
     /**
-     * Run a query
+     * Run a query.
      * @param string $query
      * @param null|int $limit
      * @throws ApiException
@@ -81,42 +81,42 @@ class API
     public function query($query, $limit = null)
     {
         $headers = $limit ? [$this->makeLimitHeader($limit)] : [];
-        $result  = $this->call('query', ['query' => ['queryString' => $query]], $headers);
+        $result = $this->call('query', ['query' => ['queryString' => $query]], $headers);
 
         // Store queryLocator for next queryMore() calls
-        $this->queryLocator = !empty($result->result->queryLocator) ? $result->result->queryLocator : null;
+        $this->queryLocator = ! empty($result->result->queryLocator) ? $result->result->queryLocator : null;
 
         return $result;
     }
 
     /**
-     * Get a next page from previous query
+     * Get a next page from previous query.
      * @param null|int $limit
      * @throws ApiException
      * @return mixed
      */
     public function queryMore($limit = null)
     {
-        if (!$this->hasMore()) {
+        if (! $this->hasMore()) {
             throw new LogicException('No query locator stored from previous query');
         }
 
-        $data    = ['queryMore' => ['queryLocator' => $this->queryLocator]];
+        $data = ['queryMore' => ['queryLocator' => $this->queryLocator]];
         $headers = $limit ? [$this->makeLimitHeader($limit)] : [];
-        $result  = $this->call('queryMore', $data, $headers);
+        $result = $this->call('queryMore', $data, $headers);
 
         // Store queryLocator for next queryMore() calls
-        $this->queryLocator = !empty($result->result->queryLocator) ? $result->result->queryLocator : null;
+        $this->queryLocator = ! empty($result->result->queryLocator) ? $result->result->queryLocator : null;
 
         return $result;
     }
 
     /**
-     * Check does query has next page
+     * Check does query has next page.
      */
     public function hasMore()
     {
-        return !empty($this->queryLocator);
+        return ! empty($this->queryLocator);
     }
 
     /**
@@ -153,7 +153,7 @@ class API
     }
 
     /**
-     * Header for limit a query
+     * Header for limit a query.
      *
      * @return \SoapHeader
      */
@@ -162,9 +162,8 @@ class API
         return new \SoapHeader('http://api.zuora.com/', 'QueryOptions', ['batchSize' => $limit]);
     }
 
-
     /**
-     * Convert DataObjects to SoapVar
+     * Convert DataObjects to SoapVar.
      *
      * @param $data
      * @return \SoapVar[]
@@ -176,7 +175,7 @@ class API
             $data = [$data];
         }
 
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             throw new LogicException('Supplied arguments must be array or DataObject');
         }
 
@@ -184,13 +183,13 @@ class API
             throw new LogicException(sprintf('API does not support more than %d objects per request', static::MAX_API_OBJECTS));
         }
 
-        if (!is_object(current($data)) || !(current($data) instanceof DataObject)) {
+        if (! is_object(current($data)) || ! (current($data) instanceof DataObject)) {
             throw new LogicException('Supplied array must be array of DataObject');
         }
 
         $class = get_class(current($data));
         foreach ($data as $obj) {
-            if (!is_object($obj) || !($obj instanceof $class)) {
+            if (! is_object($obj) || ! ($obj instanceof $class)) {
                 throw new LogicException('All DataObjects must be of the same type');
             }
         }
@@ -203,9 +202,8 @@ class API
         );
     }
 
-
     /**
-     * Call method on Zuora API
+     * Call method on Zuora API.
      *
      * @throws ApiException
      * @see \SoapClient::__soapCall
@@ -217,7 +215,7 @@ class API
         $result = $this->getClient()->__soapCall($method, $arguments, null, $this->prepareHeaders($headers));
 
         if (empty($result->result->Success)) {
-            $err = ApiException::createFromApiObject(!empty($result->result->Errors) ? $result->result->Errors : null);
+            $err = ApiException::createFromApiObject(! empty($result->result->Errors) ? $result->result->Errors : null);
             $this->logger->error(sprintf('[%s] %s', $err->getCodeName(), $err->getMessage()));
 
             throw $err;
@@ -227,7 +225,7 @@ class API
     }
 
     /**
-     * Authorizes and stores session token
+     * Authorizes and stores session token.
      * @throws \Exception
      *
      * @return \SoapHeader $array;
@@ -238,7 +236,7 @@ class API
             try {
                 $result = $this->getClient()->login(Arr::only($this->config, ['username', 'password']));
             } catch (\Exception $e) {
-                $this->logger->error('Login error: ' . $e->getMessage(), Arr::except($this->config, 'password'));
+                $this->logger->error('Login error: '.$e->getMessage(), Arr::except($this->config, 'password'));
 
                 throw $e;
             }
@@ -248,14 +246,14 @@ class API
                 'SessionHeader',
                 ['session' => $result->result->Session]
             );
-            $this->logger->debug('Logged as ' . $this->config['username']);
+            $this->logger->debug('Logged as '.$this->config['username']);
         }
 
         return $this->session;
     }
 
     /**
-     * Prepare headers for the call
+     * Prepare headers for the call.
      *
      * @param $headers
      * @return mixed
@@ -270,7 +268,7 @@ class API
     }
 
     /**
-     * Classmap for mapping SOAP objects
+     * Classmap for mapping SOAP objects.
      */
     protected function getClassMap()
     {

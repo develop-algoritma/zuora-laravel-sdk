@@ -12,7 +12,7 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
     /** @return API|\Mockery\MockInterface */
     protected function makeApi($credentialsRequired = false, $logger = null)
     {
-        $config = require __DIR__ . '/../../storage/config.php';
+        $config = require __DIR__.'/../../storage/config.php';
 
         if ($credentialsRequired && (empty($config['username']) || empty($config['password']))) {
             $this->markTestSkipped('If you want to run integration tests provide sandbox credentials in config.php file');

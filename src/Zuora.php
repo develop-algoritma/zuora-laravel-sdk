@@ -5,14 +5,14 @@ namespace Spira\ZuoraSdk;
 use Spira\ZuoraSdk\DataObjects\Product;
 
 /**
- * Business logic to interact with Zuora
+ * Business logic to interact with Zuora.
  */
 class Zuora
 {
     /** @var API */
     protected $api;
 
-    function __construct(API $api)
+    public function __construct(API $api)
     {
         $this->api = $api;
     }

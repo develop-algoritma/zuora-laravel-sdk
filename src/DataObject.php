@@ -7,7 +7,7 @@ use Illuminate\Support\Fluent;
 abstract class DataObject extends Fluent
 {
     protected $namespace = 'http://object.api.zuora.com/';
-    protected $type      = 'zObject';
+    protected $type = 'zObject';
 
     /** @return \SoapVar */
     public function toSoap()
