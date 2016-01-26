@@ -95,7 +95,7 @@ class API
      * @throws ApiException
      * @return mixed
      */
-    public function queryNext($limit = null)
+    public function queryMore($limit = null)
     {
         if (!$this->hasMore()) {
             throw new LogicException('No query locator stored from previous query');
@@ -266,7 +266,7 @@ class API
         $headersCombined = array_merge($this->headers, $headers);
         $headersCombined[] = $this->getLoginHeaders();
 
-        return $headers;
+        return $headersCombined;
     }
 
     /**
