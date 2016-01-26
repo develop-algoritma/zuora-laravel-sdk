@@ -18,33 +18,81 @@ class Zuora
     }
 
     /**
-     * @param $product Product|Product[]
+     * Get first resultset of objects from $table.
+     *
+     * @param $filtered - lambda called with QueryBuilder argument for adding conditions
+     * @return DataObject[]|bool
      */
-    public function addProduct($product)
+    public function getAll($table, array $columns, $limit = null, \Closure $filtered = null)
     {
-        return $this->api->create($product);
+        $query = new QueryBuilder($table, $columns);
+
+        if ($filtered) {
+            $filtered($query);
+        }
+
+        $result = $this->api->query($query->toZoql(), $limit);
+
+        if (empty($result->result->records)) {
+            return false;
+        }
+
+        // Zuora API returns 1 object itself not in array
+        if (is_object($result->result->records)) {
+            return [$result->result->records];
+        }
+
+        return $result->result->records;
     }
 
     /**
-     * @return Product[]
+     * Get one object from $table.
+     *
+     * @param $filtered - lambda called with QueryBuilder argument for adding conditions
+     * @return DataObject
      */
-    public function getProducts()
+    public function getOne($table, array $columns, \Closure $filtered = null)
     {
-        return $this->api->query('SELECT Id, Name FROM Product');
+        $query = new QueryBuilder($table, $columns);
+
+        if ($filtered) {
+            $filtered($query);
+        }
+
+        return $this->fetchOne($query);
     }
 
-    public function getProductRatePlans()
+    /**
+     * Get one object from $table by id.
+     *
+     * @return DataObject
+     */
+    public function getOneById($table, $columns, $id)
     {
-        // TODO
+        $query = new QueryBuilder($table, $columns);
+        $query->where('id', '=', $id);
+
+        return $this->fetchOne($query);
     }
 
-    public function subscribeUserToRatePlan()
+    // Example of concrete methods for Products
+
+    public function getAllProducts($limit = null, array $columns = null)
     {
-        // TODO
+        return $this->getAll('Products', $columns ?: Product::getDefaultColumns(), $limit);
     }
 
-    public function getUserSubscriptions()
+    public function getOneProduct($id, array $columns = null)
     {
-        // TODO
+        return $this->getOneById('Products', $columns ?: Product::getDefaultColumns(), $id);
+    }
+
+    // End of example
+
+    protected function fetchOne(QueryBuilder $query)
+    {
+        $result = $this->api->query($query->toZoql(), 1);
+
+        return !empty($result->result->records) ? $result->result->records : false;
     }
 }

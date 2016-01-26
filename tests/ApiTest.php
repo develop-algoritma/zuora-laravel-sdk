@@ -57,6 +57,7 @@ class ApiTest extends TestCase
     }
 
     /**
+     * @group integration
      * @expectedException Spira\ZuoraSdk\Exception\ApiException
      * @expectedExceptionCode Spira\ZuoraSdk\Exception\ApiException::MISSING_REQUIRED_VALUE
      * @expectedExceptionMessage Missing required value: EffectiveStartDate

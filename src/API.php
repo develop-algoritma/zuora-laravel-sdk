@@ -214,7 +214,7 @@ class API
 
         $result = $this->getClient()->__soapCall($method, $arguments, null, $this->prepareHeaders($headers));
 
-        if (empty($result->result->Success)) {
+        if (isset($result->result->Success) && !$result->result->Success) {
             $err = ApiException::createFromApiObject(! empty($result->result->Errors) ? $result->result->Errors : null);
             $this->logger->error(sprintf('[%s] %s', $err->getCodeName(), $err->getMessage()));
 
