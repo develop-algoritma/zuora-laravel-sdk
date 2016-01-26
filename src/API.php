@@ -264,9 +264,7 @@ class API
     protected function prepareHeaders($headers)
     {
         $headersCombined = array_merge($this->headers, $headers);
-        if ($this->session) {
-            $headersCombined[] = $this->getLoginHeaders();
-        }
+        $headersCombined[] = $this->getLoginHeaders();
 
         return $headers;
     }
