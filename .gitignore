@@ -7,6 +7,8 @@ vendor
 #Placeholder file for making sure a directory is tracked
 !.gitkeep
 
+#Local config for running integration tests
+storage/config.php
 
 # coverage
 reports/*
