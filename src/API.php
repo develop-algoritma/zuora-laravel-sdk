@@ -42,6 +42,8 @@ class API
 
     /**
      * @param $objects DataObject|DataObject[]
+     * @throws ApiException
+     * @return mixed
      */
     public function create($objects)
     {
@@ -50,6 +52,8 @@ class API
 
     /**
      * @param $objects DataObject|DataObject[]
+     * @throws ApiException
+     * @return mixed
      */
     public function update($objects)
     {
@@ -59,6 +63,8 @@ class API
     /**
      * @param $type - type of object being deleted
      * @param int|array $ids - object IDs
+     * @throws ApiException
+     * @return mixed
      */
     public function delete($type, $ids)
     {
@@ -67,6 +73,10 @@ class API
 
     /**
      * Run a query
+     * @param string $query
+     * @param null|int $limit
+     * @throws ApiException
+     * @return mixed
      */
     public function query($query, $limit = null)
     {
@@ -81,8 +91,11 @@ class API
 
     /**
      * Get a next page from previous query
+     * @param null|int $limit
+     * @throws ApiException
+     * @return mixed
      */
-    public function queryMore($limit = null)
+    public function queryNext($limit = null)
     {
         if (!$this->hasMore()) {
             throw new LogicException('No query locator stored from previous query');
@@ -149,28 +162,6 @@ class API
         return new \SoapHeader('http://api.zuora.com/', 'QueryOptions', ['batchSize' => $limit]);
     }
 
-    /**
-     * Authorizes and stores session token
-     */
-    protected function shouldBeLoggedIn()
-    {
-        if (empty($this->session)) {
-            try {
-                $result = $this->getClient()->login(Arr::only($this->config, ['username', 'password']));
-            } catch (\Exception $e) {
-                $this->logger->error('Login error: ' . $e->getMessage(), Arr::except($this->config, 'password'));
-
-                throw $e;
-            }
-
-            $this->session = new \SoapHeader(
-                'http://api.zuora.com/',
-                'SessionHeader',
-                ['session' => $result->result->Session]
-            );
-            $this->logger->debug('Logged as ' . $this->config['username']);
-        }
-    }
 
     /**
      * Convert DataObjects to SoapVar
@@ -193,9 +184,13 @@ class API
             throw new LogicException(sprintf('API does not support more than %d objects per request', static::MAX_API_OBJECTS));
         }
 
+        if (!is_object(current($data)) || !(current($data) instanceof DataObject)) {
+            throw new LogicException('Supplied array must be array of DataObject');
+        }
+
         $class = get_class(current($data));
         foreach ($data as $obj) {
-            if (!($obj instanceof $class)) {
+            if (!is_object($obj) || !($obj instanceof $class)) {
                 throw new LogicException('All DataObjects must be of the same type');
             }
         }
@@ -212,19 +207,14 @@ class API
     /**
      * Call method on Zuora API
      *
+     * @throws ApiException
      * @see \SoapClient::__soapCall
      */
     public function call($method, array $arguments, array $headers = [])
     {
         $this->logger->notice(sprintf('call(%s, %s)', $method, json_encode($arguments)));
-        $this->shouldBeLoggedIn();
 
-        $headersCombined = array_merge($this->headers, $headers);
-        if ($this->session) {
-            $headersCombined[] = $this->session;
-        }
-
-        $result = $this->getClient()->__soapCall($method, $arguments, null, $headersCombined);
+        $result = $this->getClient()->__soapCall($method, $arguments, null, $this->prepareHeaders($headers));
 
         if (empty($result->result->Success)) {
             $err = ApiException::createFromApiObject(!empty($result->result->Errors) ? $result->result->Errors : null);
@@ -234,6 +224,51 @@ class API
         }
 
         return $result;
+    }
+
+    /**
+     * Authorizes and stores session token
+     * @throws \Exception
+     *
+     * @return \SoapHeader $array;
+     */
+    protected function getLoginHeaders()
+    {
+        if (empty($this->session)) {
+            try {
+                $result = $this->getClient()->login(Arr::only($this->config, ['username', 'password']));
+            } catch (\Exception $e) {
+                $this->logger->error('Login error: ' . $e->getMessage(), Arr::except($this->config, 'password'));
+
+                throw $e;
+            }
+
+            $this->session = new \SoapHeader(
+                'http://api.zuora.com/',
+                'SessionHeader',
+                ['session' => $result->result->Session]
+            );
+            $this->logger->debug('Logged as ' . $this->config['username']);
+        }
+
+        return $this->session;
+    }
+
+    /**
+     * Prepare headers for the call
+     *
+     * @param $headers
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function prepareHeaders($headers)
+    {
+        $headersCombined = array_merge($this->headers, $headers);
+        if ($this->session) {
+            $headersCombined[] = $this->getLoginHeaders();
+        }
+
+        return $headers;
     }
 
     /**
