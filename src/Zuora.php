@@ -21,6 +21,7 @@ class Zuora
      * Get first resultset of objects from $table.
      *
      * @param $filtered - lambda called with QueryBuilder argument for adding conditions
+     *
      * @return DataObject[]|bool
      */
     public function getAll($table, array $columns, $limit = null, \Closure $filtered = null)
@@ -49,6 +50,7 @@ class Zuora
      * Get one object from $table.
      *
      * @param $filtered - lambda called with QueryBuilder argument for adding conditions
+     *
      * @return DataObject
      */
     public function getOne($table, array $columns, \Closure $filtered = null)
@@ -93,6 +95,6 @@ class Zuora
     {
         $result = $this->api->query($query->toZoql(), 1);
 
-        return ! empty($result->result->records) ? $result->result->records : false;
+        return !empty($result->result->records) ? $result->result->records : false;
     }
 }

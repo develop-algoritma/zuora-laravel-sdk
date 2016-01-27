@@ -42,7 +42,9 @@ class API
 
     /**
      * @param $objects DataObject|DataObject[]
+     *
      * @throws ApiException
+     *
      * @return mixed
      */
     public function create($objects)
@@ -52,7 +54,9 @@ class API
 
     /**
      * @param $objects DataObject|DataObject[]
+     *
      * @throws ApiException
+     *
      * @return mixed
      */
     public function update($objects)
@@ -63,7 +67,9 @@ class API
     /**
      * @param $type - type of object being deleted
      * @param int|array $ids - object IDs
+     *
      * @throws ApiException
+     *
      * @return mixed
      */
     public function delete($type, $ids)
@@ -73,9 +79,12 @@ class API
 
     /**
      * Run a query.
-     * @param string $query
+     *
+     * @param string   $query
      * @param null|int $limit
+     *
      * @throws ApiException
+     *
      * @return mixed
      */
     public function query($query, $limit = null)
@@ -84,20 +93,23 @@ class API
         $result = $this->call('query', ['query' => ['queryString' => $query]], $headers);
 
         // Store queryLocator for next queryMore() calls
-        $this->queryLocator = ! empty($result->result->queryLocator) ? $result->result->queryLocator : null;
+        $this->queryLocator = !empty($result->result->queryLocator) ? $result->result->queryLocator : null;
 
         return $result;
     }
 
     /**
      * Get a next page from previous query.
+     *
      * @param null|int $limit
+     *
      * @throws ApiException
+     *
      * @return mixed
      */
     public function queryMore($limit = null)
     {
-        if (! $this->hasMore()) {
+        if (!$this->hasMore()) {
             throw new LogicException('No query locator stored from previous query');
         }
 
@@ -106,7 +118,7 @@ class API
         $result = $this->call('queryMore', $data, $headers);
 
         // Store queryLocator for next queryMore() calls
-        $this->queryLocator = ! empty($result->result->queryLocator) ? $result->result->queryLocator : null;
+        $this->queryLocator = !empty($result->result->queryLocator) ? $result->result->queryLocator : null;
 
         return $result;
     }
@@ -116,7 +128,7 @@ class API
      */
     public function hasMore()
     {
-        return ! empty($this->queryLocator);
+        return !empty($this->queryLocator);
     }
 
     /**
@@ -129,10 +141,10 @@ class API
                 $this->config['wsdl'],
                 [
                     'soap_version' => SOAP_1_1,
-                    'trace'        => true,
-                    'exceptions'   => true,
-                    'classmap'     => $this->getClassMap(),
-                    'cache_wsdl'   => WSDL_CACHE_NONE,
+                    'trace' => true,
+                    'exceptions' => true,
+                    'classmap' => $this->getClassMap(),
+                    'cache_wsdl' => WSDL_CACHE_NONE,
                 ]
             );
             $this->client->__setLocation($this->config['endpoint']);
@@ -143,6 +155,7 @@ class API
 
     /**
      * @param \SoapClient $client
+     *
      * @return $this
      */
     public function setClient(\SoapClient $client)
@@ -166,7 +179,9 @@ class API
      * Convert DataObjects to SoapVar.
      *
      * @param $data
+     *
      * @return \SoapVar[]
+     *
      * @throws LogicException
      */
     protected function prepareSoapVars($data)
@@ -175,7 +190,7 @@ class API
             $data = [$data];
         }
 
-        if (! is_array($data)) {
+        if (!is_array($data)) {
             throw new LogicException('Supplied arguments must be array or DataObject');
         }
 
@@ -183,13 +198,13 @@ class API
             throw new LogicException(sprintf('API does not support more than %d objects per request', static::MAX_API_OBJECTS));
         }
 
-        if (! is_object(current($data)) || ! (current($data) instanceof DataObject)) {
+        if (!is_object(current($data)) || !(current($data) instanceof DataObject)) {
             throw new LogicException('Supplied array must be array of DataObject');
         }
 
         $class = get_class(current($data));
         foreach ($data as $obj) {
-            if (! is_object($obj) || ! ($obj instanceof $class)) {
+            if (!is_object($obj) || !($obj instanceof $class)) {
                 throw new LogicException('All DataObjects must be of the same type');
             }
         }
@@ -206,6 +221,7 @@ class API
      * Call method on Zuora API.
      *
      * @throws ApiException
+     *
      * @see \SoapClient::__soapCall
      */
     public function call($method, array $arguments, array $headers = [])
@@ -214,8 +230,8 @@ class API
 
         $result = $this->getClient()->__soapCall($method, $arguments, null, $this->prepareHeaders($headers));
 
-        if (isset($result->result->Success) && ! $result->result->Success) {
-            $err = ApiException::createFromApiObject(! empty($result->result->Errors) ? $result->result->Errors : null);
+        if (isset($result->result->Success) && !$result->result->Success) {
+            $err = ApiException::createFromApiObject(!empty($result->result->Errors) ? $result->result->Errors : null);
             $this->logger->error(sprintf('[%s] %s', $err->getCodeName(), $err->getMessage()));
 
             throw $err;
@@ -226,6 +242,7 @@ class API
 
     /**
      * Authorizes and stores session token.
+     *
      * @throws \Exception
      *
      * @return \SoapHeader $array;
@@ -256,7 +273,9 @@ class API
      * Prepare headers for the call.
      *
      * @param $headers
+     *
      * @return mixed
+     *
      * @throws \Exception
      */
     protected function prepareHeaders($headers)
@@ -275,7 +294,7 @@ class API
         return [
             'Product' => Product::class,
             'Account' => Account::class,
-            'Error'   => Error::class,
+            'Error' => Error::class,
         ];
     }
 }

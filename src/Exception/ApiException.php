@@ -39,6 +39,7 @@ class ApiException extends \RuntimeException
 
     /**
      * @param Error $error
+     *
      * @throws ApiException
      */
     public static function createFromApiObject(Error $error = null)

@@ -55,7 +55,7 @@ class QueryBuilder
 
             $where .= sprintf(
                 '%s%s %s %s',
-                (! empty($where) ? $prefix : ''),
+                (!empty($where) ? $prefix : ''),
                 $condition['column'],
                 $condition['operator'],
                 $this->convertValue($condition['value'])
@@ -84,7 +84,7 @@ class QueryBuilder
 
     protected function addWhere($column, $operator, $value, $or)
     {
-        if (! in_array($operator, $this->allowed_operators)) {
+        if (!in_array($operator, $this->allowed_operators)) {
             throw new LogicException(sprintf('Operator "%s" is not allowed', $operator));
         }
 
