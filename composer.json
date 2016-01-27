@@ -19,7 +19,8 @@
         "satooshi/php-coveralls": "~1.0",
         "phpunit/phpunit": "~4.0",
         "mockery/mockery": "^0.9.4",
-        "fzaninotto/faker": "^1.4"
+        "fzaninotto/faker": "^1.4",
+        "fabpot/php-cs-fixer": "~1.11"
     },
     "autoload": {
         "psr-4": {
