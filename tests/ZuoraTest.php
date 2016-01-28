@@ -1,8 +1,7 @@
 <?php
 
-use Spira\ZuoraSdk\DataObjects\Product;
-use Spira\ZuoraSdk\QueryBuilder;
 use Spira\ZuoraSdk\Zuora;
+use Spira\ZuoraSdk\QueryBuilder;
 
 class ZuoraTest extends TestCase
 {
@@ -28,7 +27,7 @@ class ZuoraTest extends TestCase
         $zuora->getOne('Product', ['Id', 'Name'], $this->getWhereLambda());
     }
 
-    public function testGetGetById()
+    public function testGetById()
     {
         $api = $this->makeApi();
         $api->shouldReceive('query')
@@ -40,38 +39,50 @@ class ZuoraTest extends TestCase
     }
 
     /**
+     * @expectedException \Spira\ZuoraSdk\Exception\LogicException
+     * @expectedExceptionMessage Cannot get ID from array: you should pass string or DataObject
+     */
+    public function testGetBadId()
+    {
+        $this->makeZuora(false)->getAllProductRatePlans([123]);
+    }
+
+    /**
      * You should have at least one product in your demo account for passing this test.
+     *
      * @group integration
      */
     public function testGetAllReturnsArrayOfProductsForOneLimited()
     {
         $api = $this->makeApi(true);
         $zuora = new Zuora($api);
-
-        $products = $zuora->getAll('Product', ['Id', 'Name'], 1);
+        $columns = ['Id', 'Name'];
+        $products = $zuora->getAll('Product', $columns, 1);
 
         $this->assertTrue(is_array($products));
         $this->assertCount(1, $products);
-        $this->checkProductObject(current($products));
+        $this->checkProductObject(current($products), $columns);
     }
 
     /**
      * You should have at least one product in your demo account for passing this test.
+     *
      * @group integration
      */
     public function testGetAllReturnsArrayOfProducts()
     {
         $api = $this->makeApi(true);
         $zuora = new Zuora($api);
-
-        $products = $zuora->getAll('Product', ['Id', 'Name']);
+        $columns = ['Id', 'Name'];
+        $products = $zuora->getAll('Product', $columns);
         $this->assertTrue(is_array($products));
         $this->assertGreaterThanOrEqual(1, count($products));
-        $this->checkProductObject(current($products));
+        $this->checkProductObject(current($products), $columns);
     }
 
     /**
      * You should have at least one product in your demo account for passing this test.
+     *
      * @group integration
      */
     public function testGetOneReturnsProduct()
@@ -79,16 +90,10 @@ class ZuoraTest extends TestCase
         $api = $this->makeApi(true);
         $zuora = new Zuora($api);
 
-        $product = $zuora->getOne('Product', ['Id', 'Name']);
+        $columns = ['Id', 'Name'];
+        $product = $zuora->getOne('Product', $columns);
 
-        $this->checkProductObject($product);
-    }
-
-    protected function checkProductObject($product)
-    {
-        $this->assertEquals(Product::class, get_class($product));
-        $this->assertNotEmpty($product->Id);
-        $this->assertNotEmpty($product->Name);
+        $this->checkProductObject($product, $columns);
     }
 
     protected function getWhereLambda()

@@ -3,6 +3,10 @@
 namespace Spira\ZuoraSdk;
 
 use Spira\ZuoraSdk\DataObjects\Product;
+use Spira\ZuoraSdk\Exception\LogicException;
+use Spira\ZuoraSdk\DataObjects\ProductRatePlan;
+use Spira\ZuoraSdk\DataObjects\ProductRatePlanCharge;
+use Spira\ZuoraSdk\DataObjects\ProductRatePlanChargeTier;
 
 /**
  * Business logic to interact with Zuora.
@@ -51,7 +55,7 @@ class Zuora
      *
      * @param $filtered - lambda called with QueryBuilder argument for adding conditions
      *
-     * @return DataObject
+     * @return DataObject|bool
      */
     public function getOne($table, array $columns, \Closure $filtered = null)
     {
@@ -67,7 +71,7 @@ class Zuora
     /**
      * Get one object from $table by id.
      *
-     * @return DataObject
+     * @return DataObject|bool
      */
     public function getOneById($table, $columns, $id)
     {
@@ -77,19 +81,152 @@ class Zuora
         return $this->fetchOne($query);
     }
 
-    // Example of concrete methods for Products
-
-    public function getAllProducts($limit = null, array $columns = null)
+    /**
+     * Get all products.
+     *
+     * @return Product[]|bool
+     */
+    public function getAllProducts(array $columns = null, $limit = null)
     {
-        return $this->getAll('Products', $columns ?: Product::getDefaultColumns(), $limit);
+        return $this->getAll('Product', $columns ?: Product::getDefaultColumns(), $limit);
     }
 
+    /**
+     * Get one product by ID.
+     *
+     * @return Product|bool
+     */
     public function getOneProduct($id, array $columns = null)
     {
-        return $this->getOneById('Products', $columns ?: Product::getDefaultColumns(), $id);
+        return $this->getOneById('Product', $columns ?: Product::getDefaultColumns(), $this->getIdFromArg($id));
     }
 
-    // End of example
+    /**
+     * Get all product's rate plans.
+     *
+     * @param Product|string $product
+     *
+     * @return DataObject[]|bool
+     */
+    public function getAllProductRatePlans($product, array $columns = null, $limit = null)
+    {
+        $id = $this->getIdFromArg($product);
+
+        return $this->getAll(
+            'ProductRatePlan',
+            $columns ?: ProductRatePlan::getDefaultColumns(),
+            $limit,
+            function (QueryBuilder $query) use ($id) {
+                $query->where('ProductID', '=', $id);
+            }
+        );
+    }
+
+    /**
+     * Get one product rate plan.
+     *
+     * @return ProductRatePlan|bool
+     */
+    public function getOneProductRatePlan($id, array $columns = null)
+    {
+        return $this->getOneById('ProductRatePlan', $columns ?: ProductRatePlan::getDefaultColumns(), $this->getIdFromArg($id));
+    }
+
+    /**
+     * Get all available currencies for product rate plan.
+     *
+     * @param ProductRatePlan|string $ratePlan
+     *
+     * @return array
+     */
+    public function getOneProductRatePlanActiveCurrencies($ratePlan)
+    {
+        $result = $this->getOneProductRatePlan($this->getIdFromArg($ratePlan), ['ActiveCurrencies']);
+
+        if (!$result || empty($result['ActiveCurrencies'])) {
+            return [];
+        }
+
+        return array_map('trim', explode(',', $result['ActiveCurrencies']));
+    }
+
+    /**
+     * Get all product rate plan charges.
+     *
+     * @param $ratePlan ProductRatePlan|string
+     *
+     * @return ProductRatePlanCharge[]|bool
+     */
+    public function getAllProductRatePlanCharges($ratePlan, array $columns = null, $limit = null)
+    {
+        $id = $this->getIdFromArg($ratePlan);
+
+        return $this->getAll(
+            'ProductRatePlanCharge',
+            $columns ?: ProductRatePlanCharge::getDefaultColumns(),
+            $limit,
+            function (QueryBuilder $query) use ($id) {
+                $query->where('ProductRatePlanId', '=', $id);
+            }
+        );
+    }
+
+    /**
+     * Get one product rate plan charge.
+     *
+     * @return ProductRatePlanCharge|bool
+     */
+    public function getOneProductRatePlanCharge($id, array $columns = null)
+    {
+        return $this->getOneById('ProductRatePlanCharge', $columns ?: ProductRatePlanCharge::getDefaultColumns(), $this->getIdFromArg($id));
+    }
+
+    /**
+     * Get all product rate plan charge tiers.
+     *
+     * @param ProductRatePlanCharge|string $ratePlanCharge
+     *
+     * @return ProductRatePlanChargeTier[]|bool
+     */
+    public function getAllProductRatePlanChargeTiers($ratePlanCharge, array $columns = null, $limit = null)
+    {
+        $id = $this->getIdFromArg($ratePlanCharge);
+
+        return $this->getAll(
+            'ProductRatePlanChargeTier',
+            $columns ?: ProductRatePlanChargeTier::getDefaultColumns(),
+            $limit,
+            function (QueryBuilder $query) use ($id) {
+                $query->where('ProductRatePlanChargeId', '=', $id);
+            }
+        );
+    }
+
+    /**
+     * Get one product rate plan charge tiers.
+     *
+     * @return ProductRatePlanChargeTier|bool
+     */
+    public function getOneProductRatePlanChargeTier($id, array $columns = null)
+    {
+        return $this->getOneById('ProductRatePlanChargeTier', $columns ?: ProductRatePlanChargeTier::getDefaultColumns(), $this->getIdFromArg($id));
+    }
+
+    /**
+     * Get ID from DataObject or return value.
+     */
+    protected function getIdFromArg($object)
+    {
+        if ($object instanceof DataObject) {
+            return $object->Id;
+        }
+
+        if (is_array($object) || is_object($object)) {
+            throw new LogicException('Cannot get ID from '.gettype($object).': you should pass string or DataObject');
+        }
+
+        return (string) $object;
+    }
 
     protected function fetchOne(QueryBuilder $query)
     {

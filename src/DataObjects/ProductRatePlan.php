@@ -5,11 +5,11 @@ namespace Spira\ZuoraSdk\DataObjects;
 use Spira\ZuoraSdk\DataObject;
 
 /**
- * @see https://knowledgecenter.zuora.com/BC_Developers/SOAP_API/E1_SOAP_API_Object_Reference/Product
+ * @see https://knowledgecenter.zuora.com/BC_Developers/SOAP_API/E1_SOAP_API_Object_Reference/ProductRatePlan
  */
-class Product extends DataObject
+class ProductRatePlan extends DataObject
 {
-    protected $type = 'Product';
+    protected $type = 'ProductRatePlan';
 
     public static function getDefaultColumns()
     {
@@ -17,24 +17,18 @@ class Product extends DataObject
             'Id',
             'Name',
             'Description',
+            'ProductId',
             'EffectiveEndDate',
             'EffectiveStartDate',
-            'AllowFeatureChanges',
-            'SKU',
-            'Category',
-            'UpdatedById',
-            'UpdatedDate',
             'CreatedById',
             'CreatedDate',
+            'UpdatedById',
+            'UpdatedDate',
         ];
     }
 
     public static function getOptionalColumns()
     {
-        return [
-            'AllowFeatureChanges',
-            'Category',
-            'Description',
-        ];
+        return ['Description'];
     }
 }

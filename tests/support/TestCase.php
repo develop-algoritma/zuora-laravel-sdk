@@ -1,12 +1,72 @@
 <?php
 
 use Spira\ZuoraSdk\API;
+use Spira\ZuoraSdk\Zuora;
+use Spira\ZuoraSdk\DataObjects\Product;
+use Spira\ZuoraSdk\DataObjects\ProductRatePlan;
+use Spira\ZuoraSdk\DataObjects\ProductRatePlanCharge;
+use Spira\ZuoraSdk\DataObjects\ProductRatePlanChargeTier;
 
 abstract class TestCase extends PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
         Mockery::close();
+    }
+
+    protected function getFirstProduct(Zuora $zuora)
+    {
+        $result = $zuora->getAllProducts(null, 1);
+
+        if (!empty($result)) {
+            return $result[0];
+        }
+
+        $this->fail('There is no products in your account');
+    }
+
+    protected function checkDataObject($object, $class, array $fields = null)
+    {
+        $this->assertTrue(is_object($object), 'Assert '.gettype($object).' is an object');
+        $this->assertTrue($object instanceof $class, 'Assert '.get_class($object).' is instance of '.$class);
+
+        if (is_null($fields)) {
+            $fields = $class::getRequiredColumns();
+        }
+
+        try {
+            foreach ($fields as $field) {
+                $this->assertArrayHasKey($field, $object);
+            }
+        } catch (\Exception $e) {
+            echo sprintf(
+                "\nObject data:\n%s\nMissing columns:\n%s\n",
+                print_r($object->toArray(), true),
+                print_r(array_diff($fields, array_keys($object->toArray())), true)
+            );
+
+            throw $e;
+        }
+    }
+
+    protected function checkProductObject($product, $columns = null)
+    {
+        $this->checkDataObject($product, Product::class, $columns);
+    }
+
+    protected function checkProductRatePlanObject($ratePlan, $columns = null)
+    {
+        $this->checkDataObject($ratePlan, ProductRatePlan::class, $columns);
+    }
+
+    protected function checkProductRatePlanChargeObject($ratePlanCharge, $columns = null)
+    {
+        $this->checkDataObject($ratePlanCharge, ProductRatePlanCharge::class, $columns);
+    }
+
+    protected function checkProductRatePlanChargeTierObject($ratePlanCharge, $columns = null)
+    {
+        $this->checkDataObject($ratePlanCharge, ProductRatePlanChargeTier::class, $columns);
     }
 
     /** @return API|\Mockery\MockInterface */
@@ -21,8 +81,15 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
         return Mockery::mock(API::class, [$config, $logger])->makePartial();
     }
 
+    /** @return Zuora */
+    protected function makeZuora($credentialsRequired = true, $logger = null)
+    {
+        return new Zuora($this->makeApi($credentialsRequired, $logger));
+    }
+
     /**
      * @param int $objectsCount - number of expected objects count
+     *
      * @return \Mockery\Matcher\Closure
      */
     protected function makeObjectsExpectation($objectsCount = 1)
@@ -39,6 +106,7 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
 
     /**
      * @param int $headersCount - number of expected headers count
+     *
      * @return \Mockery\Matcher\Closure
      */
     protected function makeLoginHeadersExpectation($headersCount = 1)

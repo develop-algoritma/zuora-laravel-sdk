@@ -11,6 +11,9 @@ use Spira\ZuoraSdk\DataObjects\Account;
 use Spira\ZuoraSdk\DataObjects\Product;
 use Spira\ZuoraSdk\Exception\ApiException;
 use Spira\ZuoraSdk\Exception\LogicException;
+use Spira\ZuoraSdk\DataObjects\ProductRatePlan;
+use Spira\ZuoraSdk\DataObjects\ProductRatePlanCharge;
+use Spira\ZuoraSdk\DataObjects\ProductRatePlanChargeTier;
 
 class API
 {
@@ -195,7 +198,8 @@ class API
         }
 
         if (count($data) > static::MAX_API_OBJECTS) {
-            throw new LogicException(sprintf('API does not support more than %d objects per request', static::MAX_API_OBJECTS));
+            throw new LogicException(sprintf('API does not support more than %d objects per request',
+                static::MAX_API_OBJECTS));
         }
 
         if (!is_object(current($data)) || !(current($data) instanceof DataObject)) {
@@ -292,9 +296,12 @@ class API
     protected function getClassMap()
     {
         return [
-            'Product' => Product::class,
             'Account' => Account::class,
             'Error' => Error::class,
+            'Product' => Product::class,
+            'ProductRatePlan' => ProductRatePlan::class,
+            'ProductRatePlanCharge' => ProductRatePlanCharge::class,
+            'ProductRatePlanChargeTier' => ProductRatePlanChargeTier::class,
         ];
     }
 }
