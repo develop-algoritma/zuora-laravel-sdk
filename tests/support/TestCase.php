@@ -19,17 +19,6 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
         Mockery::close();
     }
 
-    protected function getFirstProduct(Zuora $zuora)
-    {
-        $result = $zuora->getAllProducts(null, 1);
-
-        if (!empty($result)) {
-            return $result[0];
-        }
-
-        $this->fail('There is no products in your account');
-    }
-
     protected function checkDataObject($object, $class, array $fields = null)
     {
         $this->assertTrue(is_object($object), 'Assert '.gettype($object).' is an object');

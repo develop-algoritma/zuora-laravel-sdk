@@ -172,6 +172,7 @@ class ProductRatePlanCharge extends DataObject
     public static function getOptionalColumns()
     {
         return [
+            'AccountingCode',
             'ApplyDiscountTo',
             'BillCycleDay',
             'BillCycleType',
@@ -179,6 +180,7 @@ class ProductRatePlanCharge extends DataObject
             'BillingPeriodAlignment',
             'BillingTiming',
             'DefaultQuantity',
+            'DeferredRevenueAccount',
             'Description',
             'DiscountLevel',
             'IncludedUnits',
@@ -186,10 +188,13 @@ class ProductRatePlanCharge extends DataObject
             'MinQuantity',
             'NumberOfPeriod',
             'RatingGroup',
+            'RecognizedRevenueAccount',
+            'RevenueRecognitionRuleName',
             'RevRecCode',
             'RevRecTriggerCondition',
             'SmoothingModel',
             'SpecificBillingPeriod',
+            'TaxCode',
             'UOM',
             'UpToPeriods',
             'UsageRecordRatingOption',

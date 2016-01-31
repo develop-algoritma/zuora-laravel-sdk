@@ -1,92 +1,130 @@
 <?php
 
+use Spira\ZuoraSdk\DataObjects\Product;
+use Spira\ZuoraSdk\DataObjects\ProductRatePlan;
+use Spira\ZuoraSdk\DataObjects\ProductRatePlanCharge;
+use Spira\ZuoraSdk\DataObjects\ProductRatePlanChargeTier;
+
 /**
  * @group integration
  */
 class ProductsTest extends TestCase
 {
-    public function testProductGetters()
+    public function testGetAllProducts()
     {
-        $zuora = $this->makeZuora();
+        $zuora = $this->getZuora();
+        $products = $zuora->getAllProducts(null, 1);
 
-        // Test get all
-        $products = $zuora->getAllProducts();
         $this->assertTrue(is_array($products));
-        $this->assertGreaterThanOrEqual(1, count($products), 'There has to be at least 1 product');
+        $this->assertCount(1, $products, 'There has to be at least 1 product');
         $this->checkProductObject($products[0]);
 
-        // Test get one
-        $product = $zuora->getOneProduct($products[0]->Id);
-        $this->checkProductObject($product);
-        $this->assertEquals($products[0]->toArray(), $product->toArray());
+        return $products[0];
     }
 
     /**
-     * @depends testProductGetters
+     * @depends testGetAllProducts
      */
-    public function testProductRatePlansGetters()
+    public function testGetOneProduct(Product $product)
     {
-        $zuora = $this->makeZuora();
-        $product = $this->getFirstProduct($zuora);
+        $zuora = $this->getZuora();
+        $result = $zuora->getOneProduct($product->Id);
 
-        // Test get all
+        $this->checkProductObject($result);
+        $this->assertEquals($product->toArray(), $result->toArray());
+    }
+
+    /**
+     * @depends testGetAllProducts
+     */
+    public function testGetAllProductRatePlans(Product $product)
+    {
+        $zuora = $this->getZuora();
         $ratePlans = $zuora->getAllProductRatePlans($product);
+
         $this->assertTrue(is_array($ratePlans));
         $this->assertGreaterThanOrEqual(1, count($ratePlans), 'There has to be at least 1 rate plan for your product');
-
         $this->checkProductRatePlanObject($ratePlans[0]);
 
-        // Test get one
-        $ratePlan = $zuora->getOneProductRatePlan($ratePlans[0]['Id']);
-        $this->checkProductRatePlanObject($ratePlan);
+        return $ratePlans[0];
+    }
 
-        // Test get currencies
+    /**
+     * @depends testGetAllProductRatePlans
+     */
+    public function testGetOneProductRatePlan(ProductRatePlan $ratePlan)
+    {
+        $zuora = $this->getZuora();
+        $result = $zuora->getOneProductRatePlan($ratePlan['Id']);
+
+        $this->checkProductRatePlanObject($result);
+        $this->assertEquals($ratePlan->toArray(), $result->toArray());
+    }
+
+    /**
+     * @depends testGetAllProductRatePlans
+     */
+    public function testGetProductRatePlanCurrencies(ProductRatePlan $ratePlan)
+    {
+        $zuora = $this->getZuora();
+
         $currencies = $zuora->getOneProductRatePlanActiveCurrencies($ratePlan);
         $this->assertTrue(is_array($currencies));
         $this->assertGreaterThanOrEqual(1, $currencies, 'There has to be at least 1 currency for rate plan');
     }
 
     /**
-     * @depends testProductRatePlansGetters
+     * @depends testGetAllProductRatePlans
      */
-    public function testProductRatePlanChargeGetters()
+    public function testGetAllProductRatePlanCharges(ProductRatePlan $ratePlan)
     {
-        $zuora = $this->makeZuora();
-        $product = $this->getFirstProduct($zuora);
-        $ratePlan = current($zuora->getAllProductRatePlans($product));
+        $zuora = $this->getZuora();
 
-        // Test get all
         $ratePlanCharges = $zuora->getAllProductRatePlanCharges($ratePlan);
         $this->assertTrue(is_array($ratePlanCharges));
         $this->assertGreaterThanOrEqual(1, $ratePlanCharges, 'There has to be at least 1 rate plan charge for your rate plan');
 
         $this->checkProductRatePlanChargeObject($ratePlanCharges[0]);
 
-        // Test get one
-        $ratePlanCharge = $zuora->getOneProductRatePlanCharge($ratePlanCharges[0]);
-        $this->checkProductRatePlanChargeObject($ratePlanCharge);
-        $this->assertEquals($ratePlanCharges[0]->toArray(), $ratePlanCharge->toArray());
+        return $ratePlanCharges[0];
     }
 
     /**
-     * @depends testProductRatePlanChargeGetters
+     * @depends testGetAllProductRatePlanCharges
      */
-    public function testProductRatePlanChargeTierGetters()
+    public function testGetOneProductRatePlanCharge(ProductRatePlanCharge $ratePlanCharge)
     {
-        $zuora = $this->makeZuora();
-        $product = $this->getFirstProduct($zuora);
-        $ratePlan = current($zuora->getAllProductRatePlans($product, null, 1));
-        $ratePlanCharge = current($zuora->getAllProductRatePlanCharges($ratePlan, null, 1));
+        $zuora = $this->getZuora();
+        $result = $zuora->getOneProductRatePlanCharge($ratePlanCharge);
 
-        // Test get all
+        $this->checkProductRatePlanChargeObject($result);
+        $this->assertEquals($ratePlanCharge->toArray(), $result->toArray());
+    }
+
+    /**
+     * @depends testGetAllProductRatePlanCharges
+     */
+    public function testGetAllProductRatePlanChargeTiers(ProductRatePlanCharge $ratePlanCharge)
+    {
+        $zuora = $this->getZuora();
+
         $tiers = $zuora->getAllProductRatePlanChargeTiers($ratePlanCharge);
         $this->assertTrue(is_array($tiers));
         $this->assertGreaterThanOrEqual(1, count($tiers), 'There has to be at least 1 rate plan charge tier for rate plan charge');
         $this->checkProductRatePlanChargeTierObject($tiers[0]);
 
-        // Test get one
-        $tier = $zuora->getOneProductRatePlanChargeTier($tiers[0]);
-        $this->checkProductRatePlanChargeTierObject($tier);
-        $this->assertEquals($tiers[0]->toArray(), $tier->toArray());
+        return $tiers[0];
+    }
+
+    /**
+     * @depends testGetAllProductRatePlanChargeTiers
+     */
+    public function testGetOneProductRatePlanChargeTier(ProductRatePlanChargeTier $tier)
+    {
+        $zuora = $this->getZuora();
+        $result = $zuora->getOneProductRatePlanChargeTier($tier);
+
+        $this->checkProductRatePlanChargeTierObject($result);
+        $this->assertEquals($tier->toArray(), $result->toArray());
     }
 }
