@@ -2,13 +2,18 @@
 
 use Spira\ZuoraSdk\API;
 use Spira\ZuoraSdk\Zuora;
+use Spira\ZuoraSdk\DataObjects\Account;
+use Spira\ZuoraSdk\DataObjects\Contact;
 use Spira\ZuoraSdk\DataObjects\Product;
+use Spira\ZuoraSdk\DataObjects\PaymentMethod;
 use Spira\ZuoraSdk\DataObjects\ProductRatePlan;
 use Spira\ZuoraSdk\DataObjects\ProductRatePlanCharge;
 use Spira\ZuoraSdk\DataObjects\ProductRatePlanChargeTier;
 
 abstract class TestCase extends PHPUnit_Framework_TestCase
 {
+    protected $zuora;
+
     public function tearDown()
     {
         Mockery::close();
@@ -69,6 +74,21 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
         $this->checkDataObject($ratePlanCharge, ProductRatePlanChargeTier::class, $columns);
     }
 
+    protected function checkAccountObject($account, $columns = null)
+    {
+        $this->checkDataObject($account, Account::class, $columns);
+    }
+
+    protected function checkContactObject($contact, $columns = null)
+    {
+        $this->checkDataObject($contact, Contact::class, $columns);
+    }
+
+    protected function checkPaymentTypeObject($paymentType, $columns = null)
+    {
+        $this->checkDataObject($paymentType, PaymentMethod::class, $columns);
+    }
+
     /** @return API|\Mockery\MockInterface */
     protected function makeApi($credentialsRequired = false, $logger = null)
     {
@@ -85,6 +105,16 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
     protected function makeZuora($credentialsRequired = true, $logger = null)
     {
         return new Zuora($this->makeApi($credentialsRequired, $logger));
+    }
+
+    /** @return Zuora */
+    protected function getZuora()
+    {
+        if (is_null($this->zuora)) {
+            $this->zuora = $this->makeZuora();
+        }
+
+        return $this->zuora;
     }
 
     /**

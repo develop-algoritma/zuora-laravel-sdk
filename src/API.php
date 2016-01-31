@@ -6,8 +6,10 @@ use Monolog\Logger;
 use Illuminate\Support\Arr;
 use Psr\Log\LoggerInterface;
 use Monolog\Handler\NullHandler;
+use Spira\ZuoraSdk\DataObjects\Contact;
 use Spira\ZuoraSdk\DataObjects\Error;
 use Spira\ZuoraSdk\DataObjects\Account;
+use Spira\ZuoraSdk\DataObjects\PaymentMethod;
 use Spira\ZuoraSdk\DataObjects\Product;
 use Spira\ZuoraSdk\Exception\ApiException;
 use Spira\ZuoraSdk\Exception\LogicException;
@@ -297,7 +299,9 @@ class API
     {
         return [
             'Account' => Account::class,
+            'Contact' => Contact::class,
             'Error' => Error::class,
+            'PaymentMethod' => PaymentMethod::class,
             'Product' => Product::class,
             'ProductRatePlan' => ProductRatePlan::class,
             'ProductRatePlanCharge' => ProductRatePlanCharge::class,

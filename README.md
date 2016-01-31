@@ -88,6 +88,9 @@ Instance of `QueryBuilder` is passed into `$filtered` lambda for adding conditio
 While ZOQL does not support wildcards for columns you should provide list of them manually.
 
 For some types of objects there are added custom methods:
+
+**Products**
+
 * `getAllProducts(array $columns = null, $limit = null)`
 * `getOneProduct($id, array $columns = null)`
 * `getAllProductRatePlans($product, array $columns = null, $limit = null)`
@@ -97,6 +100,15 @@ For some types of objects there are added custom methods:
 * `getOneProductRatePlanCharge($id, array $columns = null)`
 * `getAllProductRatePlanChargeTiers($ratePlanCharge, array $columns = null, $limit = null)`
 * `getOneProductRatePlanChargeTier($id, array $columns = null)`
+
+**Accounts**
+
+* `getAllAccounts(array $columns = null, $limit = null)`
+* `getOneAccount($id, array $columns = null)`
+* `getAllContacts($account, array $columns = null, $limit = null)`
+* `getOneContact($id, array $columns = null)`
+* `getAllPaymentMethods($account, array $columns = null, $limit = null)`
+* `getOnePaymentMethod($id, array $columns = null)`
 
 # Usage Example
 

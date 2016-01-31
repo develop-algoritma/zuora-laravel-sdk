@@ -2,6 +2,9 @@
 
 namespace Spira\ZuoraSdk;
 
+use Spira\ZuoraSdk\DataObjects\Account;
+use Spira\ZuoraSdk\DataObjects\Contact;
+use Spira\ZuoraSdk\DataObjects\PaymentMethod;
 use Spira\ZuoraSdk\DataObjects\Product;
 use Spira\ZuoraSdk\Exception\LogicException;
 use Spira\ZuoraSdk\DataObjects\ProductRatePlan;
@@ -210,6 +213,84 @@ class Zuora
     public function getOneProductRatePlanChargeTier($id, array $columns = null)
     {
         return $this->getOneById('ProductRatePlanChargeTier', $columns ?: ProductRatePlanChargeTier::getDefaultColumns(), $this->getIdFromArg($id));
+    }
+
+    /**
+     * Get all accounts.
+     *
+     * @return bool|Account[]
+     */
+    public function getAllAccounts(array $columns = null, $limit = null)
+    {
+        return $this->getAll('Account', $columns ?: Account::getDefaultColumns(), $limit);
+    }
+
+    /**
+     * Get one account.
+     *
+     * @return bool|Account
+     */
+    public function getOneAccount($id, array $columns = null)
+    {
+        return $this->getOneById('Account', $columns ?: Account::getDefaultColumns(), $this->getIdFromArg($id));
+    }
+
+    /**
+     * Get all account's contacts.
+     *
+     * @param $account Account|string
+     *
+     * @return bool|Contact[]
+     */
+    public function getAllContacts($account, array $columns = null, $limit = null)
+    {
+        $id = $this->getIdFromArg($account);
+
+        return $this->getAll(
+            'Contact',
+            $columns ?: Contact::getDefaultColumns(),
+            $limit,
+            function (QueryBuilder $query) use ($id) {
+                $query->where('AccountId', '=', $id);
+            }
+        );
+    }
+
+    /**
+     * @return bool|Contact
+     */
+    public function getOneContact($id, array $columns = null)
+    {
+        return $this->getOneById('Contact', $columns ?: Contact::getDefaultColumns(), $this->getIdFromArg($id));
+    }
+
+    /**
+     * Get all account's payment mehtods.
+     *
+     * @param $account Account|string
+     *
+     * @return bool|DataObject[]
+     */
+    public function getAllPaymentMethods($account, array $columns = null, $limit = null)
+    {
+        $id = $this->getIdFromArg($account);
+
+        return $this->getAll(
+            'PaymentMethod',
+            $columns ?: PaymentMethod::getDefaultColumns(),
+            $limit,
+            function (QueryBuilder $query) use ($id) {
+                $query->where('AccountId', '=', $id);
+            }
+        );
+    }
+
+    /**
+     * @return bool|PaymentMethod
+     */
+    public function getOnePaymentMethod($id, array $columns = null)
+    {
+        return $this->getOneById('PaymentMethod', $columns ?: PaymentMethod::getDefaultColumns(), $this->getIdFromArg($id));
     }
 
     /**

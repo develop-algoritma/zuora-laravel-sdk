@@ -19,8 +19,6 @@ class ProductsTest extends TestCase
         $product = $zuora->getOneProduct($products[0]->Id);
         $this->checkProductObject($product);
         $this->assertEquals($products[0]->toArray(), $product->toArray());
-
-        return true;
     }
 
     /**
