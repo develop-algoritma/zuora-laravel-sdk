@@ -124,10 +124,6 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
         return new Subscription(
             [
                 'TermType' => Subscription::TERM_TYPE_EVERGREEN,
-//                '' => '',
-//                '' => '',
-//                '' => '',
-//                '' => '',
             ]
         );
     }
