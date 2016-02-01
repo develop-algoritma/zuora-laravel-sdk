@@ -12,33 +12,10 @@ class AccountsTest extends TestCase
     public function testCreateAccount()
     {
         $zuora = $this->getZuora();
-        $account = new Account(
-            [
-                'Batch' => 'Batch1',
-                'Currency' => 'USD',
-                'Name' => 'Test User',
-                'BillCycleDay' => 0,
-                'BcdSettingOption' => Account::BCD_SETTING_OPTION_AUTO_SET,
-                'PaymentTerm' => Account::PAYMENT_TERM_DUE_UPON_RECEIPT,
-            ]
-        );
 
-        $contact = new Contact(
-            [
-                'Country' => 'AU',
-                'FirstName' => 'John',
-                'LastName' => 'Doe',
-            ]
-        );
-
-        $paymentMethod = new PaymentMethod(
-            [
-                'Type' => PaymentMethod::TYPE_PAYPAL,
-                'PaypalType' => PaymentMethod::PAYPAL_TYPE_EXPRESS_CHECKOUT,
-                'PaypalEmail' => 'john.doe@example.com',
-                'PaypalBaid' => str_repeat('a', 32),
-            ]
-        );
+        $account = $this->makeAccount();
+        $contact = $this->makeContact();
+        $paymentMethod = $this->makePaymentMethod();
 
         try {
             $zuora->createAccount($account, $contact, $paymentMethod);

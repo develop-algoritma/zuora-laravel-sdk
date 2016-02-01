@@ -83,6 +83,18 @@ class API
     }
 
     /**
+     * @param $objects DataObject|DataObject[]
+     *
+     * @throws ApiException
+     *
+     * @return mixed
+     */
+    public function subscribe($objects)
+    {
+        return $this->call('subscribe', ['zObjects' => $this->prepareSoapVars($objects)]);
+    }
+
+    /**
      * Run a query.
      *
      * @param string   $query

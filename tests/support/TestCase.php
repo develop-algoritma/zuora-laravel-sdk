@@ -1,6 +1,7 @@
 <?php
 
 use Spira\ZuoraSdk\API;
+use Spira\ZuoraSdk\DataObjects\Subscription;
 use Spira\ZuoraSdk\Zuora;
 use Spira\ZuoraSdk\DataObjects\Account;
 use Spira\ZuoraSdk\DataObjects\Contact;
@@ -76,6 +77,59 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
     protected function checkPaymentTypeObject($paymentType, $columns = null)
     {
         $this->checkDataObject($paymentType, PaymentMethod::class, $columns);
+    }
+
+    /** @return Account */
+    protected function makeAccount()
+    {
+        return new Account(
+            [
+                'Batch' => 'Batch1',
+                'Currency' => 'USD',
+                'Name' => 'Test User',
+                'BillCycleDay' => 0,
+                'BcdSettingOption' => Account::BCD_SETTING_OPTION_AUTO_SET,
+                'PaymentTerm' => Account::PAYMENT_TERM_DUE_UPON_RECEIPT,
+            ]
+        );
+    }
+
+    /** @return Contact */
+    protected function makeContact()
+    {
+        return new Contact(
+            [
+                'Country' => 'AU',
+                'FirstName' => 'John',
+                'LastName' => 'Doe',
+            ]
+        );
+    }
+
+    /** @return PaymentMethod */
+    protected function makePaymentMethod()
+    {
+        return new PaymentMethod(
+            [
+                'Type' => PaymentMethod::TYPE_PAYPAL,
+                'PaypalType' => PaymentMethod::PAYPAL_TYPE_EXPRESS_CHECKOUT,
+                'PaypalEmail' => 'john.doe@example.com',
+                'PaypalBaid' => str_repeat('a', 32),
+            ]
+        );
+    }
+
+    protected function makeSubscription()
+    {
+        return new Subscription(
+            [
+                'TermType' => Subscription::TERM_TYPE_EVERGREEN,
+//                '' => '',
+//                '' => '',
+//                '' => '',
+//                '' => '',
+            ]
+        );
     }
 
     /** @return API|\Mockery\MockInterface */

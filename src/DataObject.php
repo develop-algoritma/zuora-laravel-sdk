@@ -12,7 +12,31 @@ abstract class DataObject extends Fluent
     /** @return \SoapVar */
     public function toSoap()
     {
-        return new \SoapVar($this->toArray(), SOAP_ENC_OBJECT, $this->type, $this->namespace);
+        return static::convertToSoap($this->toArray(), $this->type, $this->namespace);
+    }
+
+    /**
+     * Convert values and structures to nested SoapVar.
+     *
+     * @return \SoapVar
+     */
+    public static function convertToSoap($mixed, $type = null, $namespace = null)
+    {
+        if (is_array($mixed)) {
+            $arr = [];
+            foreach ($mixed as $key => $val) {
+                if ($val instanceof self) {
+                    $arr[$key] = $val->toSoap();
+                } elseif (is_array($val)) {
+                    $arr[$key] = static::convertToSoap($val, $type, $namespace);
+                } else {
+                    $arr[$key] = $val;
+                }
+            }
+            $mixed = $arr;
+        }
+
+        return new \SoapVar($mixed, SOAP_ENC_OBJECT, $type, $namespace);
     }
 
     /**

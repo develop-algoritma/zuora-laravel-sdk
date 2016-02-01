@@ -1,6 +1,7 @@
 <?php
 
 use Psr\Log\LoggerInterface;
+use Spira\ZuoraSdk\DataObject;
 use Spira\ZuoraSdk\DataObjects\Account;
 use Spira\ZuoraSdk\DataObjects\Product;
 
@@ -97,5 +98,28 @@ class ApiTest extends TestCase
     public function testErrorCreateWithDifferentDataObjects()
     {
         $this->makeApi()->create([new Product(), new Account()]);
+    }
+
+    public function testConvertToSoap()
+    {
+        $arr = [
+            'one' => 1,
+            'arr' => [
+                'two' => 2,
+                'three' => [
+                    'four' => 4,
+                ],
+            ],
+        ];
+
+        $result = DataObject::convertToSoap($arr, 'type1', 'namespace2');
+
+        $this->assertInstanceOf(\SoapVar::class, $result);
+
+        $this->assertEquals($result->enc_value['one'], 1);
+        $this->assertEquals($result->enc_value['arr']->enc_value['two'], 2);
+
+        $this->assertInstanceOf(\SoapVar::class, $result->enc_value['arr']);
+        $this->assertInstanceOf(\SoapVar::class, $result->enc_value['arr']->enc_value['three']);
     }
 }
