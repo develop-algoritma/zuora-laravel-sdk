@@ -98,6 +98,7 @@ class PaymentMethod extends DataObject
     public static function getOptionalColumns()
     {
         return [
+            'AccountId',
             'AchAbaCode',
             'AchAccountName',
             'AchAccountNumberMask',
@@ -138,6 +139,8 @@ class PaymentMethod extends DataObject
             'IBAN',
             'IPAddress',
             'LastFailedSaleTransactionDate',
+            'LastTransactionDateTime',
+            'LastTransactionStatus',
             'LastName',
             'ExistingMandate',
             'MandateCreationDate',
@@ -152,6 +155,7 @@ class PaymentMethod extends DataObject
             'StreetName',
             'StreetNumber',
             'MaxConsecutivePaymentFailures',
+            'PaymentMethodStatus',
             'PaymentRetryWindow',
             'PaypalBaid',
             'PaypalEmail',

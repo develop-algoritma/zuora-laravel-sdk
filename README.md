@@ -107,8 +107,9 @@ For some types of objects there are added custom methods:
 * `getOneAccount($id, array $columns = null)`
 * `getAllContacts($account, array $columns = null, $limit = null)`
 * `getOneContact($id, array $columns = null)`
-* `getAllPaymentMethods($account, array $columns = null, $limit = null)`
+* `getPaymentMethodsForAccount($account, array $columns = null, $limit = null)`
 * `getOnePaymentMethod($id, array $columns = null)`
+* `getAllPaymentMethods(array $columns = null, $limit = null)`
 
 # Usage Example
 

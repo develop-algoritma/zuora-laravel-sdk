@@ -18,7 +18,7 @@ class AccountsTest extends TestCase
         $this->assertGreaterThanOrEqual(1, count($accounts), 'There has to be at least 1 account');
         $this->checkAccountObject($accounts[0]);
 
-        return $accounts[0];
+        return $accounts[1];
     }
 
     /**
@@ -60,14 +60,25 @@ class AccountsTest extends TestCase
         $this->assertEquals($contact->toArray(), $result->toArray());
     }
 
-    /**
-     * @depends testGetAllAccounts
-     */
-    public function testGetAllPaymentMethods(Account $account)
+    public function testGetAllPaymentMethods()
     {
         $api = $this->getZuora();
 
-        $paymentMethods = $api->getAllPaymentMethods($account);
+        $paymentMethods = $api->getAllPaymentMethods();
+
+        $this->assertTrue(is_array($paymentMethods));
+        $this->assertGreaterThanOrEqual(1, count($paymentMethods));
+        $this->checkPaymentTypeObject($paymentMethods[0]);
+    }
+
+    /**
+     * @depends testGetAllAccounts
+     */
+    public function testGetPaymentMethodsForAccount(Account $account)
+    {
+        $api = $this->getZuora();
+
+        $paymentMethods = $api->getPaymentMethodsForAccount($account);
         $this->assertTrue(is_array($paymentMethods));
         $this->assertGreaterThanOrEqual(1, count($paymentMethods));
         $this->checkPaymentTypeObject($paymentMethods[0]);
@@ -76,7 +87,7 @@ class AccountsTest extends TestCase
     }
 
     /**
-     * @depends testGetAllPaymentMethods
+     * @depends testGetPaymentMethodsForAccount
      */
     public function testGetOnePaymentMethod(PaymentMethod $paymentMethod)
     {

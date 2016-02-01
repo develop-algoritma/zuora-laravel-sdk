@@ -265,13 +265,23 @@ class Zuora
     }
 
     /**
+     * Get all payment mehtods.
+     *
+     * @return bool|DataObject[]
+     */
+    public function getAllPaymentMethods(array $columns = null, $limit = null)
+    {
+        return $this->getAll('PaymentMethod', $columns ?: PaymentMethod::getDefaultColumns(), $limit);
+    }
+
+    /**
      * Get all account's payment mehtods.
      *
      * @param $account Account|string
      *
      * @return bool|DataObject[]
      */
-    public function getAllPaymentMethods($account, array $columns = null, $limit = null)
+    public function getPaymentMethodsForAccount($account, array $columns = null, $limit = null)
     {
         $id = $this->getIdFromArg($account);
 
