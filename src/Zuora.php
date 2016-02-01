@@ -24,6 +24,12 @@ class Zuora
         $this->api = $api;
     }
 
+    /** @return API */
+    public function getApi()
+    {
+        return $this->api;
+    }
+
     /**
      * Get first resultset of objects from $table.
      *
@@ -213,6 +219,52 @@ class Zuora
     public function getOneProductRatePlanChargeTier($id, array $columns = null)
     {
         return $this->getOneById('ProductRatePlanChargeTier', $columns ?: ProductRatePlanChargeTier::getDefaultColumns(), $this->getIdFromArg($id));
+    }
+
+    /**
+     * Create and activate account.
+     * If payment method supplied it saved as default payment method to account.
+     *
+     * @param Account       $account
+     * @param Contact       $contact
+     * @param PaymentMethod $method
+     *
+     * @return Account
+     */
+    public function createAccount(Account $account, Contact $contact, PaymentMethod $paymentMethod = null)
+    {
+        if (empty($account['Status'])) {
+            $account['Status'] = Account::STATUS_DRAFT;
+        }
+
+        // Creation of account
+        $result = $this->api->create($account);
+        $account['Id'] = $result->result->Id;
+
+        // Creation of contact
+        $contact['AccountId'] = $account['Id'];
+
+        $result = $this->api->create($contact);
+        $contact['Id'] = $result->result->Id;
+
+        // Saving of payment method if supplied
+        if ($paymentMethod) {
+            $paymentMethod['AccountId'] = $account['Id'];
+
+            $result = $this->api->create($paymentMethod);
+            $paymentMethod['Id'] = $result->result->Id;
+
+            $account['DefaultPaymentMethodId'] = $paymentMethod['Id'];
+        }
+
+        // Updating account with contact and payment method and activating it
+        $account['Status'] = Account::STATUS_ACTIVE;
+        $account['BillToId'] = $contact['Id'];
+        $account['SoldToId'] = $contact['Id'];
+
+        $this->api->update($account);
+
+        return $account;
     }
 
     /**

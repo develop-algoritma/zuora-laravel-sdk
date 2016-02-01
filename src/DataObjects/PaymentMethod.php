@@ -11,6 +11,37 @@ class PaymentMethod extends DataObject
 {
     protected $type = 'PaymentMethod';
 
+    const ACH_ACCOUNT_TYPE_BusinessChecking = 'BusinessChecking';
+    const ACH_ACCOUNT_TYPE_Checking = 'Checking';
+    const ACH_ACCOUNT_TYPE_Saving = 'Saving';
+
+    const BANK_TRANSFER_TYPE_AUTOMATISCH_INCASSO = 'AutomatischIncasso';
+    const BANK_TRANSFER_TYPE_LASTSCHRIFT_DE = 'LastschriftDE';
+    const BANK_TRANSFER_TYPE_LASTSCHRIFT_AT = 'LastschriftAT';
+    const BANK_TRANSFER_TYPE_DEMANDE_DE_PRELEVEMENT = 'DemandeDePrelevement';
+    const BANK_TRANSFER_TYPE_DIRECT_DEBIT_UK = 'DirectDebitUK';
+    const BANK_TRANSFER_TYPE_DOMICIL = 'Domicil';
+    const BANK_TRANSFER_TYPE_LASTSCHRIFT_CH = 'LastschriftCH';
+    const BANK_TRANSFER_TYPE_RID = 'RID';
+    const BANK_TRANSFER_TYPE_ORDEN_DE_DOMICILIACION = 'OrdenDeDomiciliacion';
+
+    const PAYMENT_METHOD_STATUS_ACTIVE = 'Active';
+    const PAYMENT_METHOD_STATUS_CLOSED = 'Closed';
+
+    const TYPE_ACH = 'ACH';
+    const TYPE_BANK_TRANSFER = 'BankTransfer';
+    const TYPE_CASH = 'Cash';
+    const TYPE_CHECK = 'Check';
+    const TYPE_CREDIT_CARD = 'CreditCard';
+    const TYPE_CREDIT_CARD_REFERENCE_TRANSACTION = 'CreditCardReferenceTransaction';
+    const TYPE_DEBIT_CARD = 'DebitCard';
+    const TYPE_OTHER = 'Other';
+    const TYPE_PAYPAL = 'PayPal';
+    const TYPE_WIRE_TRANSFER = 'WireTransfer';
+
+    const PAYPAL_TYPE_EXPRESS_CHECKOUT = 'ExpressCheckout';
+    const PAYPAL_TYPE_ADAPTIVE_PAYMENTS = 'AdaptivePayments';
+
     public static function getDefaultColumns()
     {
         return [

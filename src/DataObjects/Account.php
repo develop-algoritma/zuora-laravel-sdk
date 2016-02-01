@@ -11,6 +11,18 @@ class Account extends DataObject
 {
     protected $type = 'Account';
 
+    const BCD_SETTING_OPTION_AUTO_SET = 'AutoSet';
+    const BCD_SETTING_OPTION_MANUAL_SET = 'ManualSet';
+
+    const STATUS_DRAFT = 'Draft';
+    const STATUS_ACTIVE = 'Active';
+    const STATUS_CANCELED = 'Canceled';
+
+    const PAYMENT_TERM_DUE_UPON_RECEIPT = 'Due Upon Receipt';
+    const PAYMENT_TERM_NET_7 = 'Net 7';
+    const PAYMENT_TERM_NET_30 = 'Net 30';
+    const PAYMENT_TERM_NET_60 = 'Net 60';
+
     public static function getDefaultColumns()
     {
         return [

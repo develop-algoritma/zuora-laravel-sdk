@@ -110,6 +110,7 @@ For some types of objects there are added custom methods:
 * `getPaymentMethodsForAccount($account, array $columns = null, $limit = null)`
 * `getOnePaymentMethod($id, array $columns = null)`
 * `getAllPaymentMethods(array $columns = null, $limit = null)`
+* `createAccount(Account $account, Contact $contact, PaymentMethod $paymentMethod = null)`
 
 # Usage Example
 

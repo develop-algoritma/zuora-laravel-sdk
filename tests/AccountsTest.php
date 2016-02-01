@@ -9,6 +9,57 @@ use Spira\ZuoraSdk\DataObjects\PaymentMethod;
  */
 class AccountsTest extends TestCase
 {
+    public function testCreateAccount()
+    {
+        $zuora = $this->getZuora();
+        $account = new Account(
+            [
+                'Batch' => 'Batch1',
+                'Currency' => 'USD',
+                'Name' => 'Test User',
+                'BillCycleDay' => 0,
+                'BcdSettingOption' => Account::BCD_SETTING_OPTION_AUTO_SET,
+                'PaymentTerm' => Account::PAYMENT_TERM_DUE_UPON_RECEIPT,
+            ]
+        );
+
+        $contact = new Contact(
+            [
+                'Country' => 'AU',
+                'FirstName' => 'John',
+                'LastName' => 'Doe',
+            ]
+        );
+
+        $paymentMethod = new PaymentMethod(
+            [
+                'Type' => PaymentMethod::TYPE_PAYPAL,
+                'PaypalType' => PaymentMethod::PAYPAL_TYPE_EXPRESS_CHECKOUT,
+                'PaypalEmail' => 'john.doe@example.com',
+                'PaypalBaid' => str_repeat('a', 32),
+            ]
+        );
+
+        try {
+            $zuora->createAccount($account, $contact, $paymentMethod);
+
+            $this->assertNotEmpty($account['Id']);
+            $this->assertNotEmpty($contact['Id']);
+            $this->assertNotEmpty($paymentMethod['Id']);
+
+            $account = $zuora->getOneAccount($account['Id']);
+
+            $this->assertEquals(Account::STATUS_ACTIVE, $account['Status'], 'Account is activated after creation');
+            $this->assertEquals($contact['Id'], $account['BillToId'], 'Contact is assigned to Bill to');
+            $this->assertEquals($contact['Id'], $account['SoldToId'], 'Contact is assigned to Sold to');
+            $this->assertEquals($paymentMethod['Id'], $account['DefaultPaymentMethodId'], 'Default payment method is set');
+        } finally {
+            if ($id = $account['Id']) {
+                $zuora->getApi()->delete('Account', $id);
+            }
+        }
+    }
+
     public function testGetAllAccounts()
     {
         $api = $this->getZuora();
