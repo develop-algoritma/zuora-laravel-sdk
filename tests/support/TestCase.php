@@ -85,6 +85,7 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
         return new Account(
             [
                 'Batch' => 'Batch1',
+                'Status' => Account::STATUS_DRAFT,
                 'Currency' => 'USD',
                 'Name' => 'Test User',
                 'BillCycleDay' => 0,
