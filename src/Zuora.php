@@ -122,7 +122,7 @@ class Zuora
      *
      * @param Product|string $product
      *
-     * @return DataObject[]|bool
+     * @return ProductRatePlan[]|bool
      */
     public function getAllProductRatePlans($product, array $columns = null, $limit = null)
     {
@@ -361,6 +361,8 @@ class Zuora
     }
 
     /**
+     * Get one contact.
+     *
      * @return bool|Contact
      */
     public function getOneContact($id, array $columns = null)
@@ -369,7 +371,7 @@ class Zuora
     }
 
     /**
-     * Get all payment mehtods.
+     * Get all payment methods.
      *
      * @return bool|DataObject[]
      */
@@ -379,7 +381,7 @@ class Zuora
     }
 
     /**
-     * Get all account's payment mehtods.
+     * Get all account's payment methods.
      *
      * @param $account Account|string
      *
@@ -405,6 +407,45 @@ class Zuora
     public function getOnePaymentMethod($id, array $columns = null)
     {
         return $this->getOneById('PaymentMethod', $columns ?: PaymentMethod::getDefaultColumns(), $this->getIdFromArg($id));
+    }
+
+    /**
+     * Get all subscriptions.
+     *
+     * @return bool|Subscription[]
+     */
+    public function getAllSubscriptions(array $columns = null, $limit = null)
+    {
+        return $this->getAll('Subscription', $columns ?: Subscription::getDefaultColumns(), $limit);
+    }
+
+    /**
+     * @return bool|Subscription
+     */
+    public function getOneSubscription($id, array $columns = null)
+    {
+        return $this->getOneById('Subscription', $columns ?: Subscription::getDefaultColumns(), $this->getIdFromArg($id));
+    }
+
+    /**
+     * Get all subscriptions for account.
+     *
+     * @param string|Account $account
+     *
+     * @return Subscription[]
+     */
+    public function getSubscriptionsForAccount($account, array $columns = null, $limit = null)
+    {
+        $id = $this->getIdFromArg($account);
+
+        return $this->getAll(
+            'Subscription',
+            $columns ?: Subscription::getDefaultColumns(),
+            $limit,
+            function (QueryBuilder $query) use ($id) {
+                $query->where('AccountId', '=', $id);
+            }
+        );
     }
 
     /**

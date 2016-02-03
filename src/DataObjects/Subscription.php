@@ -30,7 +30,6 @@ class Subscription extends DataObject
     {
         return [
             'AccountId',
-            'AncestorAccountId',
             'AutoRenew',
             'CancelledDate',
             'ContractAcceptanceDate',
@@ -69,6 +68,33 @@ class Subscription extends DataObject
             'UpdatedById',
             'UpdatedDate',
             'Version',
+        ];
+    }
+
+    public static function getOptionalColumns()
+    {
+        return [
+            'CancelledDate',
+            'ContractAcceptanceDate',
+            'ContractEffectiveDate',
+            'CreatorAccountId',
+            'CreatorInvoiceOwnerId',
+            'CurrentTerm',
+            'InitialTerm',
+            'InvoiceOwnerId',
+            'Notes',
+            'OpportunityCloseDate__QT',
+            'OpportunityName__QT',
+            'PreviousSubscriptionId',
+            'QuoteBusinessType__QT',
+            'QuoteNumber__QT',
+            'QuoteType__QT',
+            'RenewalTerm',
+            'ServiceActivationDate',
+            'SubscriptionEndDate',
+            'SubscriptionStartDate',
+            'TermEndDate',
+            'TermStartDate',
         ];
     }
 }

@@ -79,6 +79,11 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
         $this->checkDataObject($paymentType, PaymentMethod::class, $columns);
     }
 
+    protected function checkSubscriptionObject($subscription, $columns = null)
+    {
+        $this->checkDataObject($subscription, Subscription::class, $columns);
+    }
+
     /** @return Account */
     protected function makeAccount()
     {

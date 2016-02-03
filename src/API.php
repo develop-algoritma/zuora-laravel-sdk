@@ -6,13 +6,14 @@ use Monolog\Logger;
 use Illuminate\Support\Arr;
 use Psr\Log\LoggerInterface;
 use Monolog\Handler\NullHandler;
-use Spira\ZuoraSdk\DataObjects\Contact;
 use Spira\ZuoraSdk\DataObjects\Error;
+use Spira\ZuoraSdk\DataObjects\Contact;
 use Spira\ZuoraSdk\DataObjects\Account;
-use Spira\ZuoraSdk\DataObjects\PaymentMethod;
 use Spira\ZuoraSdk\DataObjects\Product;
 use Spira\ZuoraSdk\Exception\ApiException;
+use Spira\ZuoraSdk\DataObjects\Subscription;
 use Spira\ZuoraSdk\Exception\LogicException;
+use Spira\ZuoraSdk\DataObjects\PaymentMethod;
 use Spira\ZuoraSdk\DataObjects\ProductRatePlan;
 use Spira\ZuoraSdk\DataObjects\ProductRatePlanCharge;
 use Spira\ZuoraSdk\DataObjects\ProductRatePlanChargeTier;
@@ -318,6 +319,7 @@ class API
             'ProductRatePlan' => ProductRatePlan::class,
             'ProductRatePlanCharge' => ProductRatePlanCharge::class,
             'ProductRatePlanChargeTier' => ProductRatePlanChargeTier::class,
+            'Subscription' => Subscription::class,
         ];
     }
 }
