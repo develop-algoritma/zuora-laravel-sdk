@@ -1,9 +1,67 @@
 <?php
 
+use Spira\ZuoraSdk\DataObjects\Account;
 use Spira\ZuoraSdk\DataObjects\Subscription;
 
 class SubscriptionTest extends TestCase
 {
+    public function testSubscribeExistingAccount()
+    {
+        $zuora = $this->getZuora();
+
+        $product = current($zuora->getAllProducts(null, 1));
+        $ratePlan = current($zuora->getAllProductRatePlans($product, null, 1));
+        $ratePlanCharge = current($zuora->getAllProductRatePlanCharges($ratePlan, null, 1));
+
+        $account = $this->makeAccount();
+        $contact = $this->makeContact();
+        $paymentMethod = $this->makePaymentMethod();
+        $subscription = $this->makeSubscription();
+
+        try {
+            $acc = $zuora->createAccount($account, $contact, $paymentMethod);
+            $result = $zuora->subscribe(new Account(['Id' => $acc['Id']]), $subscription, $ratePlan, $ratePlanCharge);
+
+            $this->assertNotEmpty($result->result->SubscriptionId);
+            $this->assertEquals($acc['Id'], $result->result->AccountId);
+        } catch (\Exception $e) {
+            print_r($zuora->getApi()->getClient()->__getLastRequest());
+
+            throw $e;
+        } finally {
+            if ($acc) {
+                $zuora->getApi()->delete('Account', $acc['Id']);
+            }
+        }
+    }
+
+    public function testSubscribeAndCreateAccount()
+    {
+        $zuora = $this->getZuora();
+
+        $product = current($zuora->getAllProducts(null, 1));
+        $ratePlan = current($zuora->getAllProductRatePlans($product, null, 1));
+        $ratePlanCharge = current($zuora->getAllProductRatePlanCharges($ratePlan, null, 1));
+
+        $account = $this->makeAccount();
+        $contact = $this->makeContact();
+        $paymentMethod = $this->makePaymentMethod();
+        $subscription = $this->makeSubscription();
+
+        try {
+            $result = $zuora->subscribe($account, $subscription, $ratePlan, $ratePlanCharge, $paymentMethod, $contact);
+
+            $this->assertNotEmpty($result->result->SubscriptionId);
+            $this->assertNotEmpty($result->result->AccountId);
+        } catch (\Exception $e) {
+            print_r($zuora->getApi()->getClient()->__getLastRequest());
+
+            throw $e;
+        }
+
+        $zuora->getApi()->delete('Account', $result->result->AccountId);
+    }
+
     public function testGetAllSubscriptions()
     {
         $zuora = $this->getZuora();
@@ -40,32 +98,5 @@ class SubscriptionTest extends TestCase
         $this->assertGreaterThanOrEqual(1, $result);
         $this->checkSubscriptionObject($result[0]);
         $this->assertEquals($result[0]['AccountId'], $subscription['AccountId']);
-    }
-
-    public function testSubscribe()
-    {
-        $this->markTestSkipped();
-
-        $zuora = $this->getZuora();
-
-        $product = current($zuora->getAllProducts(null, 1));
-        $ratePlan = current($zuora->getAllProductRatePlans($product, null, 1));
-        $ratePlanCharge = current($zuora->getAllProductRatePlanCharges($ratePlan, null, 1));
-
-        $account = $this->makeAccount();
-        $contact = $this->makeContact();
-        $paymentMethod = $this->makePaymentMethod();
-        $subscription = $this->makeSubscription();
-
-        try {
-            $result = $zuora->subscribe($account, $subscription, $ratePlan, $ratePlanCharge, $paymentMethod, $contact);
-
-            print_r($result);
-        } catch (\Exception $e) {
-            // print_r($zuora->getApi()->getClient()->__getLastRequest());
-            // print_r($zuora->getApi()->getClient()->__getLastResponse());
-
-            throw $e;
-        }
     }
 }

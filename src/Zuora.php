@@ -4,17 +4,12 @@ namespace Spira\ZuoraSdk;
 
 use Spira\ZuoraSdk\DataObjects\Account;
 use Spira\ZuoraSdk\DataObjects\Contact;
-use Spira\ZuoraSdk\DataObjects\PaymentMethod;
 use Spira\ZuoraSdk\DataObjects\Product;
-use Spira\ZuoraSdk\DataObjects\RatePlan;
-use Spira\ZuoraSdk\DataObjects\RatePlanChargeData;
-use Spira\ZuoraSdk\DataObjects\RatePlanData;
-use Spira\ZuoraSdk\DataObjects\SubscribeOptions;
-use Spira\ZuoraSdk\DataObjects\SubscribeRequest;
 use Spira\ZuoraSdk\DataObjects\Subscription;
-use Spira\ZuoraSdk\DataObjects\SubscriptionData;
 use Spira\ZuoraSdk\Exception\LogicException;
+use Spira\ZuoraSdk\DataObjects\PaymentMethod;
 use Spira\ZuoraSdk\DataObjects\ProductRatePlan;
+use Spira\ZuoraSdk\DataObjects\SubscribeOptions;
 use Spira\ZuoraSdk\DataObjects\ProductRatePlanCharge;
 use Spira\ZuoraSdk\DataObjects\ProductRatePlanChargeTier;
 
@@ -242,35 +237,20 @@ class Zuora
     ) {
         $data = [];
 
-        $data['Account'] = $account;
-        $paymentMethod && $data['PaymentMethod'] = $paymentMethod;
-        $contact && $data['BillToContact'] = $contact;
-        $contact && $data['SoldToContact'] = $contact;
-        $subscribeOptions && $data['SubscribeOptions'] = $subscribeOptions;
+        $data['Account'] = $account->toArray();
+        $paymentMethod && $data['PaymentMethod'] = $paymentMethod->toArray();
+        $contact && $data['BillToContact'] = $contact->toArray();
+        $subscribeOptions && $data['SubscribeOptions'] = $subscribeOptions->toArray();
 
-        $data['SubscriptionData'] = new SubscriptionData(
-            [
-                'Subscription' => $subscription,
-                'RatePlanData' => new RatePlanData(
-                    [
-                        'RatePlan' => new RatePlan(
-                            [
-                                'ProductRatePlanId' => $ratePlan['Id'],
-                            ]
-                        ),
-                        'RatePlanChargeData' => [
-                            new RatePlanChargeData(
-                                [
-                                    'RatePlanCharge' => $ratePlanCharge['Id'],
-                                ]
-                            ),
-                        ],
-                    ]
-                ),
-            ]
-        );
+        $data['SubscriptionData'] = [
+            'Subscription' => $subscription->toArray(),
+            'RatePlanData' => [
+                'RatePlan' => ['ProductRatePlanId' => $ratePlan['Id']],
+                'RatePlanChargeData' => [['RatePlanCharge' => ['ProductRatePlanChargeId' => $ratePlanCharge['Id']]]],
+            ],
+        ];
 
-        return $this->api->subscribe(new SubscribeRequest($data));
+        return $this->api->subscribe($data);
     }
 
     /**

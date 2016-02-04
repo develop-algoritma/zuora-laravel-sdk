@@ -91,7 +91,7 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
             [
                 'Batch' => 'Batch1',
                 'Status' => Account::STATUS_DRAFT,
-                'Currency' => 'USD',
+                'Currency' => 'AUD',
                 'Name' => 'Test User',
                 'BillCycleDay' => 0,
                 'BcdSettingOption' => Account::BCD_SETTING_OPTION_AUTO_SET,

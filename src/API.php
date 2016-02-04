@@ -84,7 +84,7 @@ class API
     }
 
     /**
-     * @param $objects DataObject|DataObject[]
+     * @param array $objects
      *
      * @throws ApiException
      *
@@ -92,7 +92,7 @@ class API
      */
     public function subscribe($objects)
     {
-        return $this->call('subscribe', ['zObjects' => $this->prepareSoapVars($objects)]);
+        return $this->call('subscribe', ['zObjects' => [$objects]]);
     }
 
     /**
