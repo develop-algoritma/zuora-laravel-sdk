@@ -101,7 +101,7 @@ class ZuoraTest extends TestCase
     /**
      * @group integration
      * @expectedException \Spira\ZuoraSdk\Exception\NotFoundException
-     * @expectedExceptionMessage Object not found
+     * @expectedExceptionMessage Product not found
      */
     public function testGetOneNonExistantThrowsException()
     {
@@ -113,11 +113,11 @@ class ZuoraTest extends TestCase
     /**
      * @group integration
      * @expectedException \Spira\ZuoraSdk\Exception\NotFoundException
-     * @expectedExceptionMessage Object not found
+     * @expectedExceptionMessage Product with id "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" does not exists
      */
     public function testGetOneByNonExistantIdThrowsException()
     {
-        $this->makeZuora()->getOneById('Product', ['Id', 'Name'], uniqid());
+        $this->makeZuora()->getOneById('Product', ['Id', 'Name'], str_repeat('a', 32));
     }
 
     protected function getWhereLambda()

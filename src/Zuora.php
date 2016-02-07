@@ -79,7 +79,11 @@ class Zuora
             $filtered($query);
         }
 
-        return $this->fetchOne($query);
+        if ($result = $this->fetchOne($query)) {
+            return $result;
+        }
+
+        throw new NotFoundException($table.' not found');
     }
 
     /**
@@ -94,7 +98,11 @@ class Zuora
         $query = new QueryBuilder($table, $columns);
         $query->where('id', '=', $id);
 
-        return $this->fetchOne($query);
+        if ($result = $this->fetchOne($query)) {
+            return $result;
+        }
+
+        throw new NotFoundException(sprintf('%s with id "%s" does not exists', $table, $id));
     }
 
     /**
@@ -468,15 +476,11 @@ class Zuora
     }
 
     /**
-     * @throws NotFoundException
+     * @return array|bool
      */
-    public function fetchOne(QueryBuilder $query)
+    protected function fetchOne(QueryBuilder $query)
     {
         $result = $this->api->query($query->toZoql(), 1);
-
-        if (empty($result->result->records)) {
-            throw new NotFoundException('Object not found');
-        }
 
         return $result->result->records;
     }
