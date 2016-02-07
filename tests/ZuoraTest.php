@@ -21,7 +21,8 @@ class ZuoraTest extends TestCase
         $api = $this->makeApi();
         $api->shouldReceive('query')
             ->with('SELECT Id, Name FROM Product WHERE id = 123', 1)
-            ->once();
+            ->once()
+            ->andReturn($this->getRequestMockedResult());
 
         $zuora = new Zuora($api);
         $zuora->getOne('Product', ['Id', 'Name'], $this->getWhereLambda());
@@ -32,7 +33,8 @@ class ZuoraTest extends TestCase
         $api = $this->makeApi();
         $api->shouldReceive('query')
             ->with('SELECT Id, Name FROM Product WHERE id = 321', 1)
-            ->once();
+            ->once()
+            ->andReturn($this->getRequestMockedResult());
 
         $zuora = new Zuora($api);
         $zuora->getOneById('Product', ['Id', 'Name'], 321);
@@ -96,10 +98,41 @@ class ZuoraTest extends TestCase
         $this->checkProductObject($product, $columns);
     }
 
+    /**
+     * @group integration
+     * @expectedException \Spira\ZuoraSdk\Exception\NotFoundException
+     * @expectedExceptionMessage Object not found
+     */
+    public function testGetOneNonExistantThrowsException()
+    {
+        $this->makeZuora()->getOne('Product', ['Id', 'Name'], function (QueryBuilder $query) {
+            $query->where('Id', '=', uniqid());
+        });
+    }
+
+    /**
+     * @group integration
+     * @expectedException \Spira\ZuoraSdk\Exception\NotFoundException
+     * @expectedExceptionMessage Object not found
+     */
+    public function testGetOneByNonExistantIdThrowsException()
+    {
+        $this->makeZuora()->getOneById('Product', ['Id', 'Name'], uniqid());
+    }
+
     protected function getWhereLambda()
     {
         return function (QueryBuilder $builder) {
             $builder->where('id', '=', 123);
         };
+    }
+
+    protected function getRequestMockedResult()
+    {
+        $result = new stdClass();
+        $result->result = new stdClass();
+        $result->result->records = ['not used value, just for records not to be empty'];
+
+        return $result;
     }
 }

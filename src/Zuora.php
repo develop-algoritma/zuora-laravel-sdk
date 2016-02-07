@@ -8,6 +8,7 @@ use Spira\ZuoraSdk\DataObjects\Product;
 use Spira\ZuoraSdk\DataObjects\Subscription;
 use Spira\ZuoraSdk\Exception\LogicException;
 use Spira\ZuoraSdk\DataObjects\PaymentMethod;
+use Spira\ZuoraSdk\Exception\NotFoundException;
 use Spira\ZuoraSdk\DataObjects\ProductRatePlan;
 use Spira\ZuoraSdk\DataObjects\SubscribeOptions;
 use Spira\ZuoraSdk\DataObjects\ProductRatePlanCharge;
@@ -67,6 +68,8 @@ class Zuora
      * @param $filtered - lambda called with QueryBuilder argument for adding conditions
      *
      * @return DataObject|bool
+     *
+     * @throws NotFoundException
      */
     public function getOne($table, array $columns, \Closure $filtered = null)
     {
@@ -83,6 +86,8 @@ class Zuora
      * Get one object from $table by id.
      *
      * @return DataObject|bool
+     *
+     * @throws NotFoundException
      */
     public function getOneById($table, $columns, $id)
     {
@@ -106,6 +111,8 @@ class Zuora
      * Get one product by ID.
      *
      * @return Product|bool
+     *
+     * @throws NotFoundException
      */
     public function getOneProduct($id, array $columns = null)
     {
@@ -137,6 +144,8 @@ class Zuora
      * Get one product rate plan.
      *
      * @return ProductRatePlan|bool
+     *
+     * @throws NotFoundException
      */
     public function getOneProductRatePlan($id, array $columns = null)
     {
@@ -149,6 +158,8 @@ class Zuora
      * @param ProductRatePlan|string $ratePlan
      *
      * @return array
+     *
+     * @throws NotFoundException
      */
     public function getOneProductRatePlanActiveCurrencies($ratePlan)
     {
@@ -186,6 +197,8 @@ class Zuora
      * Get one product rate plan charge.
      *
      * @return ProductRatePlanCharge|bool
+     *
+     * @throws NotFoundException
      */
     public function getOneProductRatePlanCharge($id, array $columns = null)
     {
@@ -217,6 +230,8 @@ class Zuora
      * Get one product rate plan charge tiers.
      *
      * @return ProductRatePlanChargeTier|bool
+     *
+     * @throws NotFoundException
      */
     public function getOneProductRatePlanChargeTier($id, array $columns = null)
     {
@@ -313,6 +328,8 @@ class Zuora
      * Get one account.
      *
      * @return bool|Account
+     *
+     * @throws NotFoundException
      */
     public function getOneAccount($id, array $columns = null)
     {
@@ -344,6 +361,8 @@ class Zuora
      * Get one contact.
      *
      * @return bool|Contact
+     *
+     * @throws NotFoundException
      */
     public function getOneContact($id, array $columns = null)
     {
@@ -383,6 +402,8 @@ class Zuora
 
     /**
      * @return bool|PaymentMethod
+     *
+     * @throws NotFoundException
      */
     public function getOnePaymentMethod($id, array $columns = null)
     {
@@ -401,6 +422,8 @@ class Zuora
 
     /**
      * @return bool|Subscription
+     *
+     * @throws NotFoundException
      */
     public function getOneSubscription($id, array $columns = null)
     {
@@ -444,10 +467,17 @@ class Zuora
         return (string) $object;
     }
 
-    protected function fetchOne(QueryBuilder $query)
+    /**
+     * @throws NotFoundException
+     */
+    public function fetchOne(QueryBuilder $query)
     {
         $result = $this->api->query($query->toZoql(), 1);
 
-        return !empty($result->result->records) ? $result->result->records : false;
+        if (empty($result->result->records)) {
+            throw new NotFoundException('Object not found');
+        }
+
+        return $result->result->records;
     }
 }
