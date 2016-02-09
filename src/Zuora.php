@@ -4,6 +4,7 @@ namespace Spira\ZuoraSdk;
 
 use Spira\ZuoraSdk\DataObjects\Account;
 use Spira\ZuoraSdk\DataObjects\Contact;
+use Spira\ZuoraSdk\DataObjects\Payment;
 use Spira\ZuoraSdk\DataObjects\Product;
 use Spira\ZuoraSdk\DataObjects\Subscription;
 use Spira\ZuoraSdk\Exception\LogicException;
@@ -450,8 +451,50 @@ class Zuora
         $id = $this->getIdFromArg($account);
 
         return $this->getAll(
+
             'Subscription',
             $columns ?: Subscription::getDefaultColumns(),
+            $limit,
+            function (QueryBuilder $query) use ($id) {
+                $query->where('AccountId', '=', $id);
+            }
+        );
+    }
+
+    /**
+     * Get all payments.
+     *
+     * @return bool|Payment[]
+     */
+    public function getAllPayments(array $columns = null, $limit = null)
+    {
+        return $this->getAll('Payment', $columns ?: Payment::getDefaultColumns(), $limit);
+    }
+
+    /**
+     * @return bool|Subscription
+     *
+     * @throws NotFoundException
+     */
+    public function getOnePayment($id, array $columns = null)
+    {
+        return $this->getOneById('Payment', $columns ?: Payment::getDefaultColumns(), $this->getIdFromArg($id));
+    }
+
+    /**
+     * Get all payments for account.
+     *
+     * @param string|Account $account
+     *
+     * @return Payment[]
+     */
+    public function getPaymentsForAccount($account, array $columns = null, $limit = null)
+    {
+        $id = $this->getIdFromArg($account);
+
+        return $this->getAll(
+            'Payment',
+            $columns ?: Payment::getDefaultColumns(),
             $limit,
             function (QueryBuilder $query) use ($id) {
                 $query->where('AccountId', '=', $id);

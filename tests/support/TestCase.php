@@ -1,6 +1,7 @@
 <?php
 
 use Spira\ZuoraSdk\API;
+use Spira\ZuoraSdk\DataObjects\Payment;
 use Spira\ZuoraSdk\DataObjects\Subscription;
 use Spira\ZuoraSdk\Zuora;
 use Spira\ZuoraSdk\DataObjects\Account;
@@ -67,6 +68,11 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
     protected function checkAccountObject($account, $columns = null)
     {
         $this->checkDataObject($account, Account::class, $columns);
+    }
+
+    protected function checkPaymentObject($payment, $columns = null)
+    {
+        $this->checkDataObject($payment, Payment::class, $columns);
     }
 
     protected function checkContactObject($contact, $columns = null)

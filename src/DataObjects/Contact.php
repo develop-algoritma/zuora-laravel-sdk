@@ -59,6 +59,7 @@ class Contact extends DataObject
             'PostalCode',
             'State',
             'TaxRegion',
+            'WorkEmail',
             'WorkPhone',
         ];
     }

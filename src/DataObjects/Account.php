@@ -76,8 +76,10 @@ class Account extends DataObject
     {
         return [
             'AdditionalEmailAddresses',
+            'CommunicationProfileId',
             'CrmId',
             'CustomerServiceRepName',
+            'DefaultPaymentMethodId',
             'LastInvoiceDate',
             'Notes',
             'ParentId',
@@ -91,6 +93,7 @@ class Account extends DataObject
             'TaxExemptEffectiveDate',
             'TaxExemptExpirationDate',
             'TaxExemptIssuingJurisdiction',
+            'TaxExemptStatus',
             'VATId',
         ];
     }

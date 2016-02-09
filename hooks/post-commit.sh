@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+#
+# This hook applies PSR-2 code style to changed files in commit
+# Copy or symlink this file to .git/hooks/pre-commit
+# e.g.: ln -s "`pwd`/hooks/pre-commit" .git/hooks/pre-commit
+#
+
+echo "php-cs-fixer post commit hook start"
+
+PHP_CS_FIXER="vendor/bin/php-cs-fixer"
+HAS_PHP_CS_FIXER=false
+
+if [ -x vendor/bin/php-cs-fixer ]; then
+    HAS_PHP_CS_FIXER=true
+fi
+
+if $HAS_PHP_CS_FIXER; then
+    git status --porcelain | grep -e '[AM]\(.*\).php$' | cut -c 3- | while read line; do
+        git add "$line";
+    done
+else
+    echo ""
+    echo "Please install php-cs-fixer, e.g.:"
+    echo ""
+    echo "  composer require --dev fabpot/php-cs-fixer:dev-master"
+    echo ""
+fi
+
+echo "php-cs-fixer post commit hook finish"
