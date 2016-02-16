@@ -68,4 +68,12 @@ abstract class DataObject extends Fluent
     {
         return array_diff(static::getDefaultColumns(), static::getOptionalColumns());
     }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
 }
