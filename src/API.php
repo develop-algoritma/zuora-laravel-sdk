@@ -164,6 +164,7 @@ class API
                     'exceptions' => true,
                     'classmap' => $this->getClassMap(),
                     'cache_wsdl' => WSDL_CACHE_NONE,
+                    'keep_alive' => false,
                 ]
             );
             $this->client->__setLocation($this->config['endpoint']);
