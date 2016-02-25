@@ -254,7 +254,7 @@ class Zuora
         Account $account,
         Subscription $subscription,
         ProductRatePlan $ratePlan,
-        ProductRatePlanCharge $ratePlanCharge,
+        ProductRatePlanCharge $ratePlanCharge = null,
         PaymentMethod $paymentMethod = null,
         Contact $contact = null,
         SubscribeOptions $subscribeOptions = null
@@ -266,12 +266,16 @@ class Zuora
         $contact && $data['BillToContact'] = $contact->toArray();
         $subscribeOptions && $data['SubscribeOptions'] = $subscribeOptions->toArray();
 
+        $ratePlanData = ['RatePlan' => ['ProductRatePlanId' => $ratePlan['Id']]];
+        if ($ratePlanCharge) {
+            $ratePlanData['RatePlanChargeData'] = [
+                ['RatePlanCharge' => ['ProductRatePlanChargeId' => $ratePlanCharge['Id']]],
+            ];
+        }
+
         $data['SubscriptionData'] = [
             'Subscription' => $subscription->toArray(),
-            'RatePlanData' => [
-                'RatePlan' => ['ProductRatePlanId' => $ratePlan['Id']],
-                'RatePlanChargeData' => [['RatePlanCharge' => ['ProductRatePlanChargeId' => $ratePlanCharge['Id']]]],
-            ],
+            'RatePlanData' => $ratePlanData,
         ];
 
         return $this->api->subscribe($data);

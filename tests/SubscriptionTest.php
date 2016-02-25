@@ -11,7 +11,6 @@ class SubscriptionTest extends TestCase
 
         $product = current($zuora->getAllProducts(null, 1));
         $ratePlan = current($zuora->getAllProductRatePlans($product, null, 1));
-        $ratePlanCharge = current($zuora->getAllProductRatePlanCharges($ratePlan, null, 1));
 
         $account = $this->makeAccount();
         $contact = $this->makeContact();
@@ -20,7 +19,7 @@ class SubscriptionTest extends TestCase
 
         try {
             $acc = $zuora->createAccount($account, $contact, $paymentMethod);
-            $result = $zuora->subscribe(new Account(['Id' => $acc['Id']]), $subscription, $ratePlan, $ratePlanCharge);
+            $result = $zuora->subscribe(new Account(['Id' => $acc['Id']]), $subscription, $ratePlan);
 
             $this->assertNotEmpty($result->result->SubscriptionId);
             $this->assertEquals($acc['Id'], $result->result->AccountId);
