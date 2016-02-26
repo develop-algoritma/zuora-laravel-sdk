@@ -2,8 +2,8 @@
 
 #
 # This hook applies PSR-2 code style to changed files in commit
-# Copy or symlink this file to .git/hooks/pre-commit
-# e.g.: ln -s "`pwd`/hooks/pre-commit" .git/hooks/pre-commit
+# Copy or symlink this file to .git/hooks/post-commit
+# e.g.: ln -s "`pwd`/hooks/post-commit" .git/hooks/post-commit
 #
 
 echo "php-cs-fixer post commit hook start"

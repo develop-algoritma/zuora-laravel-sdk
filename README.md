@@ -111,6 +111,9 @@ For some types of objects there are added custom methods:
 * `getOnePaymentMethod($id, array $columns = null)`
 * `getAllPaymentMethods(array $columns = null, $limit = null)`
 * `createAccount(Account $account, Contact $contact, PaymentMethod $paymentMethod = null)`
+* `getAllPayments(array $columns = null, $limit = null)`
+* `getOnePayment($id, array $columns = null)`
+* `getPaymentsForAccount($account, array $columns = null, $limit = null)`
 
 **Subscriptions**
 
