@@ -4,6 +4,7 @@ namespace Spira\ZuoraSdk;
 
 use Spira\ZuoraSdk\DataObjects\Account;
 use Spira\ZuoraSdk\DataObjects\Contact;
+use Spira\ZuoraSdk\DataObjects\Invoice;
 use Spira\ZuoraSdk\DataObjects\Payment;
 use Spira\ZuoraSdk\DataObjects\Product;
 use Spira\ZuoraSdk\DataObjects\Subscription;
@@ -358,16 +359,7 @@ class Zuora
      */
     public function getAllContacts($account, array $columns = null, $limit = null)
     {
-        $id = $this->getIdFromArg($account);
-
-        return $this->getAll(
-            'Contact',
-            $columns ?: Contact::getDefaultColumns(),
-            $limit,
-            function (QueryBuilder $query) use ($id) {
-                $query->where('AccountId', '=', $id);
-            }
-        );
+        return $this->getAll('Contact', $columns ?: Contact::getDefaultColumns(), $limit, $this->filterForAccount($account));
     }
 
     /**
@@ -401,16 +393,7 @@ class Zuora
      */
     public function getPaymentMethodsForAccount($account, array $columns = null, $limit = null)
     {
-        $id = $this->getIdFromArg($account);
-
-        return $this->getAll(
-            'PaymentMethod',
-            $columns ?: PaymentMethod::getDefaultColumns(),
-            $limit,
-            function (QueryBuilder $query) use ($id) {
-                $query->where('AccountId', '=', $id);
-            }
-        );
+        return $this->getAll('PaymentMethod', $columns ?: PaymentMethod::getDefaultColumns(), $limit, $this->filterForAccount($account));
     }
 
     /**
@@ -452,17 +435,7 @@ class Zuora
      */
     public function getSubscriptionsForAccount($account, array $columns = null, $limit = null)
     {
-        $id = $this->getIdFromArg($account);
-
-        return $this->getAll(
-
-            'Subscription',
-            $columns ?: Subscription::getDefaultColumns(),
-            $limit,
-            function (QueryBuilder $query) use ($id) {
-                $query->where('AccountId', '=', $id);
-            }
-        );
+        return $this->getAll('Subscription', $columns ?: Subscription::getDefaultColumns(), $limit, $this->filterForAccount($account));
     }
 
     /**
@@ -494,16 +467,53 @@ class Zuora
      */
     public function getPaymentsForAccount($account, array $columns = null, $limit = null)
     {
+        return $this->getAll('Payment', $columns ?: Payment::getDefaultColumns(), $limit, $this->filterForAccount($account));
+    }
+
+    /**
+     * Get all invoices.
+     *
+     * @return Invoice[]|bool
+     */
+    public function getAllInvoices(array $columns = null, $limit = null)
+    {
+        return $this->getAll('Invoice', $columns ?: Invoice::getDefaultColumns(), $limit);
+    }
+
+    /**
+     * @return Invoice
+     *
+     * @throws NotFoundException
+     */
+    public function getOneInvoice($id, array $columns = null)
+    {
+        return $this->getOneById('Invoice', $columns ?: Invoice::getDefaultColumns(), $this->getIdFromArg($id));
+    }
+
+    /**
+     * Get all invoices for account.
+     *
+     * @param string|Account $account
+     *
+     * @return Invoice[]
+     */
+    public function getInvoicesForAccount($account, array $columns = null, $limit = null)
+    {
+        return $this->getAll('Invoice', $columns ?: Invoice::getDefaultColumns(), $limit, $this->filterForAccount($account));
+    }
+
+    /**
+     * Make query filter closure for account condition.
+     *
+     * @param string|Account $account
+     */
+    protected function filterForAccount($account)
+    {
         $id = $this->getIdFromArg($account);
 
-        return $this->getAll(
-            'Payment',
-            $columns ?: Payment::getDefaultColumns(),
-            $limit,
-            function (QueryBuilder $query) use ($id) {
-                $query->where('AccountId', '=', $id);
-            }
-        );
+        return function (QueryBuilder $query) use ($id) {
+            $query->where('AccountId', '=', $id);
+        };
     }
 
     /**

@@ -2,6 +2,7 @@
 
 use Spira\ZuoraSdk\DataObjects\Account;
 use Spira\ZuoraSdk\DataObjects\Contact;
+use Spira\ZuoraSdk\DataObjects\Invoice;
 use Spira\ZuoraSdk\DataObjects\Payment;
 use Spira\ZuoraSdk\DataObjects\PaymentMethod;
 
@@ -159,5 +160,44 @@ class AccountsTest extends TestCase
         $result = $api->getOnePayment($payment);
         $this->checkPaymentObject($result);
         $this->assertEquals($payment->toArray(), $result->toArray());
+    }
+
+    public function testGetAllInvoices()
+    {
+        $api = $this->getZuora();
+        $invoices = $api->getAllInvoices();
+
+        $this->assertTrue(is_array($invoices));
+        $this->assertGreaterThanOrEqual(1, count($invoices), 'There has to be at least 1 invoice');
+        $this->checkInvoiceObject($invoices[0]);
+
+        return $invoices[0];
+    }
+
+    /**
+     * @depends testGetAllInvoices
+     */
+    public function testGetOneInvoice(Invoice $invoice)
+    {
+        $api = $this->getZuora();
+
+        $result = $api->getOneInvoice($invoice['Id']);
+        $this->checkInvoiceObject($result);
+        $this->assertEquals($invoice->toArray(), $result->toArray());
+    }
+
+    /**
+     * @depends testGetAllInvoices
+     */
+    public function testGetAllAccountInvoices(Invoice $invoice)
+    {
+        $api = $this->getZuora();
+
+        $invoices = $api->getInvoicesForAccount($invoice['AccountId']);
+        $this->assertTrue(is_array($invoices));
+        $this->assertGreaterThanOrEqual(1, count($invoices));
+
+        $ids = array_pluck($invoices, 'Id');
+        $this->assertTrue(in_array($invoice['Id'], $ids));
     }
 }

@@ -111,16 +111,22 @@ For some types of objects there are added custom methods:
 * `getOnePaymentMethod($id, array $columns = null)`
 * `getAllPaymentMethods(array $columns = null, $limit = null)`
 * `createAccount(Account $account, Contact $contact, PaymentMethod $paymentMethod = null)`
-* `getAllPayments(array $columns = null, $limit = null)`
-* `getOnePayment($id, array $columns = null)`
-* `getPaymentsForAccount($account, array $columns = null, $limit = null)`
 
 **Subscriptions**
 
 * `getAllSubscriptions(array $columns = null, $limit = null)`
 * `getOneSubscription($id, array $columns = null)`
 * `getSubscriptionsForAccount($account, array $columns = null, $limit = null)`
-* `subscribe(Account $account, Subscription $subscription, ProductRatePlan $ratePlan, ProductRatePlanCharge $ratePlanCharge, PaymentMethod $paymentMethod = null, Contact $contact = null, SubscribeOptions $subscribeOptions = null)`
+* `subscribe(Account $account, Subscription $subscription, ProductRatePlan $ratePlan, ProductRatePlanCharge $ratePlanCharge = null, PaymentMethod $paymentMethod = null, Contact $contact = null, SubscribeOptions $subscribeOptions = null)`
+
+**Payments & Invoices**
+
+* `getAllPayments(array $columns = null, $limit = null)`
+* `getOnePayment($id, array $columns = null)`
+* `getPaymentsForAccount($account, array $columns = null, $limit = null)`
+* `getAllInvoices(array $columns = null, $limit = null)`
+* `getOneInvoice($id, array $columns = null)`
+* `getInvoicesForAccount($account, array $columns = null, $limit = null)`
 
 # Usage Example
 

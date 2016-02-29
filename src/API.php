@@ -9,6 +9,7 @@ use Monolog\Handler\NullHandler;
 use Spira\ZuoraSdk\DataObjects\Error;
 use Spira\ZuoraSdk\DataObjects\Contact;
 use Spira\ZuoraSdk\DataObjects\Account;
+use Spira\ZuoraSdk\DataObjects\Invoice;
 use Spira\ZuoraSdk\DataObjects\Payment;
 use Spira\ZuoraSdk\DataObjects\Product;
 use Spira\ZuoraSdk\Exception\ApiException;
@@ -316,13 +317,14 @@ class API
             'Account' => Account::class,
             'Contact' => Contact::class,
             'Error' => Error::class,
+            'Invoice' => Invoice::class,
+            'Payment' => Payment::class,
             'PaymentMethod' => PaymentMethod::class,
             'Product' => Product::class,
             'ProductRatePlan' => ProductRatePlan::class,
             'ProductRatePlanCharge' => ProductRatePlanCharge::class,
             'ProductRatePlanChargeTier' => ProductRatePlanChargeTier::class,
             'Subscription' => Subscription::class,
-            'Payment' => Payment::class,
         ];
     }
 }
