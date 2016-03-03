@@ -1,5 +1,6 @@
 <?php
 
+use Spira\ZuoraSdk\QueryBuilder;
 use Spira\ZuoraSdk\DataObjects\Account;
 use Spira\ZuoraSdk\DataObjects\Contact;
 use Spira\ZuoraSdk\DataObjects\Invoice;
@@ -42,13 +43,15 @@ class AccountsTest extends TestCase
     public function testGetAllAccounts()
     {
         $api = $this->getZuora();
-        $accounts = $api->getAllAccounts();
+        $result = $api->getAllAccounts(null, 1);
 
-        $this->assertTrue(is_array($accounts));
-        $this->assertGreaterThanOrEqual(1, count($accounts), 'There has to be at least 1 account');
-        $this->checkAccountObject($accounts[0]);
+        $this->assertTrue(is_array($result));
+        $this->assertCount(1, $result, 'There has to be at least 1 account');
 
-        return $accounts[1];
+        $account = current($result);
+        $this->checkAccountObject($account);
+
+        return $account;
     }
 
     /**
@@ -66,20 +69,22 @@ class AccountsTest extends TestCase
     /**
      * @depends testGetAllAccounts
      */
-    public function testGetAllAccountContacts(Account $account)
+    public function testGetContactsForAccount(Account $account)
     {
         $api = $this->getZuora();
 
-        $contacts = $api->getAllContacts($account);
-        $this->assertTrue(is_array($contacts));
-        $this->assertGreaterThanOrEqual(1, count($contacts), 'There has to be at least 1 contact for account');
-        $this->checkContactObject($contacts[0]);
+        $result = $api->getContactsForAccount($account);
+        $this->assertTrue(is_array($result));
+        $this->assertGreaterThanOrEqual(1, count($result), 'There has to be at least 1 contact for account');
 
-        return $contacts[0];
+        $account = current($result);
+        $this->checkContactObject($account);
+
+        return $account;
     }
 
     /**
-     * @depends testGetAllAccountContacts
+     * @depends testGetContactsForAccount
      */
     public function testGetOneContact(Contact $contact)
     {
@@ -94,30 +99,37 @@ class AccountsTest extends TestCase
     {
         $api = $this->getZuora();
 
-        $paymentMethods = $api->getAllPaymentMethods();
+        $result = $api->getAllPaymentMethods(
+            null,
+            1,
+            function (QueryBuilder $query) {
+                $query->where('AccountId', '!=', 'null');
+            }
+        );
+        $this->assertTrue(is_array($result));
+        $this->assertCount(1, $result);
 
-        $this->assertTrue(is_array($paymentMethods));
-        $this->assertGreaterThanOrEqual(1, count($paymentMethods));
-        $this->checkPaymentTypeObject($paymentMethods[0]);
+        $paymentMethod = current($result);
+        $this->checkPaymentTypeObject($paymentMethod);
+
+        return $paymentMethod;
     }
 
     /**
-     * @depends testGetAllAccounts
+     * @depends testGetAllPaymentMethods
      */
-    public function testGetPaymentMethodsForAccount(Account $account)
+    public function testGetPaymentMethodsForAccount(PaymentMethod $paymentMethod)
     {
         $api = $this->getZuora();
 
-        $paymentMethods = $api->getPaymentMethodsForAccount($account);
-        $this->assertTrue(is_array($paymentMethods));
-        $this->assertGreaterThanOrEqual(1, count($paymentMethods));
-        $this->checkPaymentTypeObject($paymentMethods[0]);
-
-        return $paymentMethods[0];
+        $result = $api->getPaymentMethodsForAccount($paymentMethod['AccountId']);
+        $this->assertTrue(is_array($result));
+        $this->assertGreaterThanOrEqual(1, count($result));
+        $this->checkPaymentTypeObject($result[0]);
     }
 
     /**
-     * @depends testGetPaymentMethodsForAccount
+     * @depends testGetAllPaymentMethods
      */
     public function testGetOnePaymentMethod(PaymentMethod $paymentMethod)
     {
@@ -131,27 +143,32 @@ class AccountsTest extends TestCase
     public function testGetAllPayments()
     {
         $api = $this->getZuora();
-        $payments = $api->getAllPayments();
-        $this->assertTrue(is_array($payments));
-        $this->assertGreaterThanOrEqual(1, count($payments), 'There has to be at least 1 payment');
-        $this->checkPaymentObject($payments[0]);
+        $result = $api->getAllPayments(null, 1);
+
+        $this->assertTrue(is_array($result));
+        $this->assertCount(1, $result, 'There has to be at least 1 payment');
+
+        $payment = current($result);
+        $this->checkPaymentObject($payment);
+
+        return $payment;
     }
 
     /**
-     * @depends testGetAllAccounts
+     * @depends testGetAllPayments
      */
-    public function testGetPaymentsForAccount(Account $account)
+    public function testGetPaymentsForAccount(Payment $payment)
     {
         $api = $this->getZuora();
 
-        $result = $api->getPaymentsForAccount($account['Id']);
+        $result = $api->getPaymentsForAccount($payment['AccountId']);
         $this->checkPaymentObject($result[0]);
 
-        return $result[0];
+        $this->assertTrue(in_array($payment['Id'], array_pluck($result, 'Id')));
     }
 
     /**
-     * @depends testGetPaymentsForAccount
+     * @depends testGetAllPayments
      */
     public function testGetOnePayment(Payment $payment)
     {
@@ -165,13 +182,15 @@ class AccountsTest extends TestCase
     public function testGetAllInvoices()
     {
         $api = $this->getZuora();
-        $invoices = $api->getAllInvoices();
+        $result = $api->getAllInvoices(null, 1);
 
-        $this->assertTrue(is_array($invoices));
-        $this->assertGreaterThanOrEqual(1, count($invoices), 'There has to be at least 1 invoice');
-        $this->checkInvoiceObject($invoices[0]);
+        $this->assertTrue(is_array($result));
+        $this->assertCount(1, $result, 'There has to be at least 1 invoice');
 
-        return $invoices[0];
+        $invoice = current($result);
+        $this->checkInvoiceObject($invoice);
+
+        return $invoice;
     }
 
     /**
@@ -193,11 +212,10 @@ class AccountsTest extends TestCase
     {
         $api = $this->getZuora();
 
-        $invoices = $api->getInvoicesForAccount($invoice['AccountId']);
-        $this->assertTrue(is_array($invoices));
-        $this->assertGreaterThanOrEqual(1, count($invoices));
+        $result = $api->getInvoicesForAccount($invoice['AccountId']);
+        $this->assertTrue(is_array($result));
+        $this->assertGreaterThanOrEqual(1, count($result));
 
-        $ids = array_pluck($invoices, 'Id');
-        $this->assertTrue(in_array($invoice['Id'], $ids));
+        $this->assertTrue(in_array($invoice['Id'], array_pluck($result, 'Id')));
     }
 }

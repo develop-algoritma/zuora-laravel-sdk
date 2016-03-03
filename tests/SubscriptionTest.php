@@ -10,7 +10,7 @@ class SubscriptionTest extends TestCase
         $zuora = $this->getZuora();
 
         $product = current($zuora->getAllProducts(null, 1));
-        $ratePlan = current($zuora->getAllProductRatePlans($product, null, 1));
+        $ratePlan = current($zuora->getRatePlansForProduct($product, null, 1));
 
         $account = $this->makeAccount();
         $contact = $this->makeContact();
@@ -39,8 +39,8 @@ class SubscriptionTest extends TestCase
         $zuora = $this->getZuora();
 
         $product = current($zuora->getAllProducts(null, 1));
-        $ratePlan = current($zuora->getAllProductRatePlans($product, null, 1));
-        $ratePlanCharge = current($zuora->getAllProductRatePlanCharges($ratePlan, null, 1));
+        $ratePlan = current($zuora->getRatePlansForProduct($product, null, 1));
+        $ratePlanCharge = current($zuora->getChargesForProductRatePlan($ratePlan, null, 1));
 
         $account = $this->makeAccount();
         $contact = $this->makeContact();

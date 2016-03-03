@@ -91,40 +91,43 @@ For some types of objects there are added custom methods:
 
 **Products**
 
-* `getAllProducts(array $columns = null, $limit = null)`
+* `getAllProducts(array $columns = null, $limit = null, \Closure $filtered = null)`
 * `getOneProduct($id, array $columns = null)`
-* `getAllProductRatePlans($product, array $columns = null, $limit = null)`
+* `getAllProductRatePlans(array $columns = null, $limit = null, \Closure $filtered = null)`
+* `getRatePlansForProduct($product, array $columns = null, $limit = null)`
 * `getOneProductRatePlan($id, array $columns = null)`
 * `getOneProductRatePlanActiveCurrencies($ratePlan)`
-* `getAllProductRatePlanCharges($ratePlan, array $columns = null, $limit = null)`
+* `getAllProductRatePlanCharges(array $columns = null, $limit = null, \Closure $filtered = null)`
+* `getChargesForProductRatePlan($ratePlan, array $columns = null, $limit = null)`
 * `getOneProductRatePlanCharge($id, array $columns = null)`
-* `getAllProductRatePlanChargeTiers($ratePlanCharge, array $columns = null, $limit = null)`
+* `getAllProductRatePlanChargeTiers(array $columns = null, $limit = null, \Closure $filtered = null)`
+* `getTiersForProductRatePlanCharge($ratePlanCharge, array $columns = null, $limit = null)`
 * `getOneProductRatePlanChargeTier($id, array $columns = null)`
 
 **Accounts**
 
-* `getAllAccounts(array $columns = null, $limit = null)`
+* `getAllAccounts(array $columns = null, $limit = null, \Closure $filtered = null)`
 * `getOneAccount($id, array $columns = null)`
-* `getAllContacts($account, array $columns = null, $limit = null)`
+* `getContactsForAccount($account, array $columns = null, $limit = null)`
 * `getOneContact($id, array $columns = null)`
 * `getPaymentMethodsForAccount($account, array $columns = null, $limit = null)`
 * `getOnePaymentMethod($id, array $columns = null)`
-* `getAllPaymentMethods(array $columns = null, $limit = null)`
+* `getAllPaymentMethods(array $columns = null, $limit = null, \Closure $filtered = null)`
 * `createAccount(Account $account, Contact $contact, PaymentMethod $paymentMethod = null)`
 
 **Subscriptions**
 
-* `getAllSubscriptions(array $columns = null, $limit = null)`
+* `getAllSubscriptions(array $columns = null, $limit = null, \Closure $filtered = null)`
 * `getOneSubscription($id, array $columns = null)`
 * `getSubscriptionsForAccount($account, array $columns = null, $limit = null)`
 * `subscribe(Account $account, Subscription $subscription, ProductRatePlan $ratePlan, ProductRatePlanCharge $ratePlanCharge = null, PaymentMethod $paymentMethod = null, Contact $contact = null, SubscribeOptions $subscribeOptions = null)`
 
 **Payments & Invoices**
 
-* `getAllPayments(array $columns = null, $limit = null)`
+* `getAllPayments(array $columns = null, $limit = null, \Closure $filtered = null)`
 * `getOnePayment($id, array $columns = null)`
 * `getPaymentsForAccount($account, array $columns = null, $limit = null)`
-* `getAllInvoices(array $columns = null, $limit = null)`
+* `getAllInvoices(array $columns = null, $limit = null, \Closure $filtered = null)`
 * `getOneInvoice($id, array $columns = null)`
 * `getInvoicesForAccount($account, array $columns = null, $limit = null)`
 

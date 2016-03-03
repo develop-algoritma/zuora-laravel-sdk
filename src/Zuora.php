@@ -112,9 +112,9 @@ class Zuora
      *
      * @return Product[]|bool
      */
-    public function getAllProducts(array $columns = null, $limit = null)
+    public function getAllProducts(array $columns = null, $limit = null, \Closure $filtered = null)
     {
-        return $this->getAll('Product', $columns ?: Product::getDefaultColumns(), $limit);
+        return $this->getAll('Product', $columns ?: Product::getDefaultColumns(), $limit, $filtered);
     }
 
     /**
@@ -132,17 +132,26 @@ class Zuora
     /**
      * Get all product's rate plans.
      *
+     * @return ProductRatePlan[]|bool
+     */
+    public function getAllProductRatePlans(array $columns = null, $limit = null, \Closure $filtered = null)
+    {
+        return $this->getAll('ProductRatePlan', $columns ?: ProductRatePlan::getDefaultColumns(), $limit, $filtered);
+    }
+
+    /**
+     * Get product's rate plans for one product.
+     *
      * @param Product|string $product
      *
      * @return ProductRatePlan[]|bool
      */
-    public function getAllProductRatePlans($product, array $columns = null, $limit = null)
+    public function getRatePlansForProduct($product, array $columns = null, $limit = null)
     {
         $id = $this->getIdFromArg($product);
 
-        return $this->getAll(
-            'ProductRatePlan',
-            $columns ?: ProductRatePlan::getDefaultColumns(),
+        return $this->getAllProductRatePlans(
+            $columns,
             $limit,
             function (QueryBuilder $query) use ($id) {
                 $query->where('ProductID', '=', $id);
@@ -185,17 +194,26 @@ class Zuora
     /**
      * Get all product rate plan charges.
      *
+     * @return ProductRatePlan[]|bool
+     */
+    public function getAllProductRatePlanCharges(array $columns = null, $limit = null, \Closure $filtered = null)
+    {
+        return $this->getAll('ProductRatePlanCharge', $columns ?: ProductRatePlanCharge::getDefaultColumns(), $limit, $filtered);
+    }
+
+    /**
+     * Get product rate plan charges for rate plan.
+     *
      * @param $ratePlan ProductRatePlan|string
      *
      * @return ProductRatePlanCharge[]|bool
      */
-    public function getAllProductRatePlanCharges($ratePlan, array $columns = null, $limit = null)
+    public function getChargesForProductRatePlan($ratePlan, array $columns = null, $limit = null)
     {
         $id = $this->getIdFromArg($ratePlan);
 
-        return $this->getAll(
-            'ProductRatePlanCharge',
-            $columns ?: ProductRatePlanCharge::getDefaultColumns(),
+        return $this->getAllProductRatePlanCharges(
+            $columns,
             $limit,
             function (QueryBuilder $query) use ($id) {
                 $query->where('ProductRatePlanId', '=', $id);
@@ -218,17 +236,26 @@ class Zuora
     /**
      * Get all product rate plan charge tiers.
      *
+     * @return ProductRatePlanChargeTier[]|bool
+     */
+    public function getAllProductRatePlanChargeTiers(array $columns = null, $limit = null, \Closure $filtered = null)
+    {
+        return $this->getAll('ProductRatePlanChargeTier', $columns ?: ProductRatePlanChargeTier::getDefaultColumns(), $limit, $filtered);
+    }
+
+    /**
+     * Get product rate plan charge tiers for rate plan charge.
+     *
      * @param ProductRatePlanCharge|string $ratePlanCharge
      *
      * @return ProductRatePlanChargeTier[]|bool
      */
-    public function getAllProductRatePlanChargeTiers($ratePlanCharge, array $columns = null, $limit = null)
+    public function getTiersForProductRatePlanCharge($ratePlanCharge, array $columns = null, $limit = null)
     {
         $id = $this->getIdFromArg($ratePlanCharge);
 
-        return $this->getAll(
-            'ProductRatePlanChargeTier',
-            $columns ?: ProductRatePlanChargeTier::getDefaultColumns(),
+        return $this->getAllProductRatePlanChargeTiers(
+            $columns,
             $limit,
             function (QueryBuilder $query) use ($id) {
                 $query->where('ProductRatePlanChargeId', '=', $id);
@@ -333,9 +360,9 @@ class Zuora
      *
      * @return bool|Account[]
      */
-    public function getAllAccounts(array $columns = null, $limit = null)
+    public function getAllAccounts(array $columns = null, $limit = null, \Closure $filtered = null)
     {
-        return $this->getAll('Account', $columns ?: Account::getDefaultColumns(), $limit);
+        return $this->getAll('Account', $columns ?: Account::getDefaultColumns(), $limit, $filtered);
     }
 
     /**
@@ -357,7 +384,7 @@ class Zuora
      *
      * @return bool|Contact[]
      */
-    public function getAllContacts($account, array $columns = null, $limit = null)
+    public function getContactsForAccount($account, array $columns = null, $limit = null)
     {
         return $this->getAll('Contact', $columns ?: Contact::getDefaultColumns(), $limit, $this->filterForAccount($account));
     }
@@ -379,9 +406,9 @@ class Zuora
      *
      * @return bool|DataObject[]
      */
-    public function getAllPaymentMethods(array $columns = null, $limit = null)
+    public function getAllPaymentMethods(array $columns = null, $limit = null, \Closure $filtered = null)
     {
-        return $this->getAll('PaymentMethod', $columns ?: PaymentMethod::getDefaultColumns(), $limit);
+        return $this->getAll('PaymentMethod', $columns ?: PaymentMethod::getDefaultColumns(), $limit, $filtered);
     }
 
     /**
@@ -393,7 +420,7 @@ class Zuora
      */
     public function getPaymentMethodsForAccount($account, array $columns = null, $limit = null)
     {
-        return $this->getAll('PaymentMethod', $columns ?: PaymentMethod::getDefaultColumns(), $limit, $this->filterForAccount($account));
+        return $this->getAllPaymentMethods($columns, $limit, $this->filterForAccount($account));
     }
 
     /**
@@ -411,9 +438,9 @@ class Zuora
      *
      * @return bool|Subscription[]
      */
-    public function getAllSubscriptions(array $columns = null, $limit = null)
+    public function getAllSubscriptions(array $columns = null, $limit = null, \Closure $filtered = null)
     {
-        return $this->getAll('Subscription', $columns ?: Subscription::getDefaultColumns(), $limit);
+        return $this->getAll('Subscription', $columns ?: Subscription::getDefaultColumns(), $limit, $filtered);
     }
 
     /**
@@ -435,7 +462,7 @@ class Zuora
      */
     public function getSubscriptionsForAccount($account, array $columns = null, $limit = null)
     {
-        return $this->getAll('Subscription', $columns ?: Subscription::getDefaultColumns(), $limit, $this->filterForAccount($account));
+        return $this->getAllSubscriptions($columns, $limit, $this->filterForAccount($account));
     }
 
     /**
@@ -443,9 +470,9 @@ class Zuora
      *
      * @return bool|Payment[]
      */
-    public function getAllPayments(array $columns = null, $limit = null)
+    public function getAllPayments(array $columns = null, $limit = null, \Closure $filtered = null)
     {
-        return $this->getAll('Payment', $columns ?: Payment::getDefaultColumns(), $limit);
+        return $this->getAll('Payment', $columns ?: Payment::getDefaultColumns(), $limit, $filtered);
     }
 
     /**
@@ -467,7 +494,7 @@ class Zuora
      */
     public function getPaymentsForAccount($account, array $columns = null, $limit = null)
     {
-        return $this->getAll('Payment', $columns ?: Payment::getDefaultColumns(), $limit, $this->filterForAccount($account));
+        return $this->getAllPayments($columns, $limit, $this->filterForAccount($account));
     }
 
     /**
@@ -475,9 +502,9 @@ class Zuora
      *
      * @return Invoice[]|bool
      */
-    public function getAllInvoices(array $columns = null, $limit = null)
+    public function getAllInvoices(array $columns = null, $limit = null, \Closure $filtered = null)
     {
-        return $this->getAll('Invoice', $columns ?: Invoice::getDefaultColumns(), $limit);
+        return $this->getAll('Invoice', $columns ?: Invoice::getDefaultColumns(), $limit, $filtered);
     }
 
     /**
@@ -499,7 +526,7 @@ class Zuora
      */
     public function getInvoicesForAccount($account, array $columns = null, $limit = null)
     {
-        return $this->getAll('Invoice', $columns ?: Invoice::getDefaultColumns(), $limit, $this->filterForAccount($account));
+        return $this->getAllInvoices($columns, $limit, $this->filterForAccount($account));
     }
 
     /**

@@ -46,7 +46,7 @@ class ZuoraTest extends TestCase
      */
     public function testGetBadId()
     {
-        $this->makeZuora(false)->getAllProductRatePlans([123]);
+        $this->makeZuora(false)->getRatePlansForProduct([123]);
     }
 
     /**
