@@ -141,7 +141,7 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
 
     protected function makeSubscription($termed = false)
     {
-        if($termed) {
+        if ($termed) {
             $date = Date('Y-m-d');
 
             return new Subscription(

@@ -83,7 +83,7 @@ class SubscriptionTest extends TestCase
             $query->where('PromoCode__c', '=', 'IQSSTAFF');
         }));
 
-        if(!$promoRatePlan) {
+        if (!$promoRatePlan) {
             $this->markTestSkipped('If you want to run this test please ensure that a discount rate plan exists in Zuora.');
         }
 
@@ -91,7 +91,7 @@ class SubscriptionTest extends TestCase
 
         $ratePlan = current($zuora->getRatePlansForProduct($product, null, 1));
 
-        if(!$ratePlan) {
+        if (!$ratePlan) {
             $this->markTestSkipped('If you want to run this test please ensure that a rate plan exists in Zuora for product ' . $promoRatePlan->ProductId);
         }
 
