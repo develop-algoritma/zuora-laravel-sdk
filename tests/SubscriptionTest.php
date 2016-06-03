@@ -106,7 +106,6 @@ class SubscriptionTest extends TestCase
             $this->assertNotEmpty($result->result->InvoiceData->Invoice);
             $this->assertNotEmpty($result->result->InvoiceData->InvoiceItem);
             $this->assertGreaterThanOrEqual(2, count($result->result->InvoiceData->InvoiceItem));
-
         } catch (\Exception $e) {
             print_r($zuora->getApi()->getClient()->__getLastRequest());
 
