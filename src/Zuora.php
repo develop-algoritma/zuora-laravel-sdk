@@ -285,7 +285,9 @@ class Zuora
         ProductRatePlanCharge $ratePlanCharge = null,
         PaymentMethod $paymentMethod = null,
         Contact $contact = null,
-        SubscribeOptions $subscribeOptions = null
+        SubscribeOptions $subscribeOptions = null,
+        ProductRatePlan $promoPlan = null,
+        $preview = false
     ) {
         $data = [];
 
@@ -294,7 +296,16 @@ class Zuora
         $contact && $data['BillToContact'] = $contact->toArray();
         $subscribeOptions && $data['SubscribeOptions'] = $subscribeOptions->toArray();
 
-        $ratePlanData = ['RatePlan' => ['ProductRatePlanId' => $ratePlan['Id']]];
+        $ratePlanData = [];
+        array_push($ratePlanData, [
+            'RatePlan' => ['ProductRatePlanId' => $ratePlan['Id']]
+        ]);
+        if($promoPlan) {
+            array_push($ratePlanData, [
+                'RatePlan' => ['ProductRatePlanId' => $promoPlan['Id']]
+            ]);
+        }
+
         if ($ratePlanCharge) {
             $ratePlanData['RatePlanChargeData'] = [
                 ['RatePlanCharge' => ['ProductRatePlanChargeId' => $ratePlanCharge['Id']]],
@@ -305,6 +316,13 @@ class Zuora
             'Subscription' => $subscription->toArray(),
             'RatePlanData' => $ratePlanData,
         ];
+
+        if($preview) {
+            $data['PreviewOptions'] = [
+                'EnablePreviewMode' => true,
+                'NumberOfPeriods' => 1
+            ];
+        }
 
         return $this->api->subscribe($data);
     }
