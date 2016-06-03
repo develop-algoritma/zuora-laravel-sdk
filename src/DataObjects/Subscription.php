@@ -26,6 +26,8 @@ class Subscription extends DataObject
     const TERM_TYPE_TERMED = 'TERMED';
     const TERM_TYPE_EVERGREEN = 'EVERGREEN';
 
+    const RENEWAL_SETTING_EVERGREEN = 'RENEW_TO_EVERGREEN';
+
     public static function getDefaultColumns()
     {
         return [

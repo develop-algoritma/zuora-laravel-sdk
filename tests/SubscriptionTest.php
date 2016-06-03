@@ -2,6 +2,7 @@
 
 use Spira\ZuoraSdk\DataObjects\Account;
 use Spira\ZuoraSdk\DataObjects\Subscription;
+use Spira\ZuoraSdk\QueryBuilder;
 
 class SubscriptionTest extends TestCase
 {
@@ -59,6 +60,57 @@ class SubscriptionTest extends TestCase
         }
 
         $zuora->getApi()->delete('Account', $result->result->AccountId);
+    }
+
+    public function testSubscribePreviewPromotion()
+    {
+        $zuora = $this->getZuora();
+
+        /** @var \Spira\ZuoraSdk\DataObjects\RatePlan $promoRatePlan */
+        $promoRatePlan = current($zuora->getAllProductRatePlans([
+            'Id',
+            'Name',
+            'Description',
+            'ProductId',
+            'EffectiveEndDate',
+            'EffectiveStartDate',
+            'CreatedById',
+            'CreatedDate',
+            'UpdatedById',
+            'UpdatedDate',
+            'PromoCode__c'
+        ], 1, function (QueryBuilder $query) {
+            $query->where('PromoCode__c', '=', 'IQSSTAFF');
+        }));
+
+        if (!$promoRatePlan) {
+            $this->markTestSkipped('If you want to run this test please ensure that a discount rate plan exists in Zuora.');
+        }
+
+        $product = $zuora->getOneProduct($promoRatePlan->ProductId);
+
+        $ratePlan = current($zuora->getRatePlansForProduct($product, null, 1));
+
+        if (!$ratePlan) {
+            $this->markTestSkipped('If you want to run this test please ensure that a rate plan exists in Zuora for product ' . $promoRatePlan->ProductId);
+        }
+
+        $account = $this->makeAccount();
+        $contact = $this->makeContact();
+        $subscription = $this->makeSubscription(true);
+
+        try {
+            $result = $zuora->subscribe($account, $subscription, $ratePlan, null, null, $contact, null, $promoRatePlan, true);
+
+            $this->assertNotEmpty($result->result->InvoiceData);
+            $this->assertNotEmpty($result->result->InvoiceData->Invoice);
+            $this->assertNotEmpty($result->result->InvoiceData->InvoiceItem);
+            $this->assertGreaterThanOrEqual(2, count($result->result->InvoiceData->InvoiceItem));
+        } catch (\Exception $e) {
+            print_r($zuora->getApi()->getClient()->__getLastRequest());
+
+            throw $e;
+        }
     }
 
     public function testGetAllSubscriptions()
