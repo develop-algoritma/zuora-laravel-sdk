@@ -101,6 +101,8 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
     {
         return new Account(
             [
+                'AccountNumber' => null,
+                'AutoPay' => false,
                 'Batch' => 'Batch1',
                 'Status' => Account::STATUS_DRAFT,
                 'Currency' => 'AUD',
@@ -137,11 +139,28 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
         );
     }
 
-    protected function makeSubscription()
+    protected function makeSubscription($termed = false)
     {
+        if($termed) {
+            $date = Date('Y-m-d');
+
+            return new Subscription(
+                [
+                    'TermType' => Subscription::TERM_TYPE_TERMED,
+                    'InitialTermPeriodType' => 'Day',
+                    'InitialTerm' => 74,
+                    'AutoRenew' => false,
+                    'ContractEffectiveDate' => $date,
+                    'ServiceActivationDate' => $date,
+                    'TermStartDate' => $date,
+                    'RenewalSetting' => Subscription::RENEWAL_SETTING_EVERGREEN
+                ]
+            );
+        }
+
         return new Subscription(
             [
-                'TermType' => Subscription::TERM_TYPE_EVERGREEN,
+                'TermType' => Subscription::TERM_TYPE_EVERGREEN
             ]
         );
     }
