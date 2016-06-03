@@ -300,7 +300,7 @@ class Zuora
         array_push($ratePlanData, [
             'RatePlan' => ['ProductRatePlanId' => $ratePlan['Id']]
         ]);
-        if($promoPlan) {
+        if ($promoPlan) {
             array_push($ratePlanData, [
                 'RatePlan' => ['ProductRatePlanId' => $promoPlan['Id']]
             ]);
@@ -317,7 +317,7 @@ class Zuora
             'RatePlanData' => $ratePlanData,
         ];
 
-        if($preview) {
+        if ($preview) {
             $data['PreviewOptions'] = [
                 'EnablePreviewMode' => true,
                 'NumberOfPeriods' => 1
