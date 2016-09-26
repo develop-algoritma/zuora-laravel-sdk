@@ -166,6 +166,13 @@ class API
                     'classmap' => $this->getClassMap(),
                     'cache_wsdl' => WSDL_CACHE_NONE,
                     'keep_alive' => false,
+                    'stream_context' => stream_context_create(
+                        [
+                            'ssl' => [
+                                'crypto_method' => STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT // Use TLS1.1 or 1.2
+                            ],
+                        ]
+                    )
                 ]
             );
             $this->client->__setLocation($this->config['endpoint']);
