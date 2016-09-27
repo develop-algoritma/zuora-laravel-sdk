@@ -9,5 +9,5 @@ return [
     'wsdl'     => __DIR__ . '/zuora.a.80.0.wsdl',
     'username' => '',
     'password' => '',
-    'endpoint' => 'https://apisandbox.zuora.com/apps/services/a/74.0',
+    'endpoint' => 'https://apisandbox.zuora.com/apps/services/a/80.0',
 ];
