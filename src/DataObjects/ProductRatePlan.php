@@ -24,6 +24,7 @@ class ProductRatePlan extends DataObject
             'CreatedDate',
             'UpdatedById',
             'UpdatedDate',
+            'PortalTitle__c'
         ];
     }
 
