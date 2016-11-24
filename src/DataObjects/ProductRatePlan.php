@@ -23,9 +23,7 @@ class ProductRatePlan extends DataObject
             'CreatedById',
             'CreatedDate',
             'UpdatedById',
-            'UpdatedDate',
-            'PortalTitle__c',
-            'VoucherifySKU__c'
+            'UpdatedDate'
         ];
     }
 
