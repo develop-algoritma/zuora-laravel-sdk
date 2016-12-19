@@ -2,6 +2,7 @@
 
 namespace Spira\ZuoraSdk;
 
+use Carbon\Carbon;
 use Spira\ZuoraSdk\DataObjects\Account;
 use Spira\ZuoraSdk\DataObjects\Contact;
 use Spira\ZuoraSdk\DataObjects\Invoice;
@@ -373,6 +374,19 @@ class Zuora
         return $account;
     }
 
+    /**
+     * Create payment
+     *
+     *
+     * @return Account
+     */
+    public function createPayment(Payment $payment)
+    {
+        $this->api->create($payment);
+
+        return $payment;
+    }    
+    
     /**
      * Get all accounts.
      *
