@@ -2,7 +2,6 @@
 
 namespace Spira\ZuoraSdk;
 
-use Carbon\Carbon;
 use Spira\ZuoraSdk\DataObjects\Account;
 use Spira\ZuoraSdk\DataObjects\Contact;
 use Spira\ZuoraSdk\DataObjects\Invoice;
