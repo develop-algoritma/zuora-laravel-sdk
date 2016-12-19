@@ -374,6 +374,19 @@ class Zuora
     }
 
     /**
+     * Create payment
+     *
+     *
+     * @return Account
+     */
+    public function createPayment(Payment $payment)
+    {
+        $this->api->create($payment);
+
+        return $payment;
+    }    
+    
+    /**
      * Get all accounts.
      *
      * @return bool|Account[]
