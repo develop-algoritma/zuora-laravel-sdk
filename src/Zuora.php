@@ -295,6 +295,7 @@ class Zuora
         $paymentMethod && $data['PaymentMethod'] = $paymentMethod->toArray();
         $contact && $data['BillToContact'] = $contact->toArray();
         $subscribeOptions && $data['SubscribeOptions'] = $subscribeOptions->toArray();
+        $subscriptionData = $subscription->toArray();
 
         $ratePlanData = [];
         array_push($ratePlanData, [
@@ -313,15 +314,21 @@ class Zuora
         }
 
         $data['SubscriptionData'] = [
-            'Subscription' => $subscription->toArray(),
+            'Subscription' => $subscriptionData,
             'RatePlanData' => $ratePlanData,
         ];
 
         if ($preview) {
             $data['PreviewOptions'] = [
                 'EnablePreviewMode' => true,
-                'NumberOfPeriods' => 1
             ];
+
+            if ($subscriptionData['Type'] == Subscription::TERM_TYPE_TERMED) {
+                $data['PreviewOptions']['PreviewThroughTermEnd'] = true;
+            } else {
+                // Subscription::TERM_TYPE_EVERGREEN
+                $data['PreviewOptions']['NumberOfPeriods'] = 1;
+            }
         }
 
         return $this->api->subscribe($data);
