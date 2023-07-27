@@ -1,5 +1,5 @@
 {
-    "name": "spira/zuora-laravel-sdk",
+    "name": "algoritma/zuora-laravel-sdk",
     "description": "Lumen/Laravel service provider for interfacing with Zuora SOAP API",
     "keywords": [
         "laravel",
